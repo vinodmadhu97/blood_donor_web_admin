@@ -1,12 +1,13 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/models/request.dart';
-import 'package:blood_donor_web_admin/screens/staff/donor_management_screen.dart';
+import 'package:blood_donor_web_admin/screens/staff/donation_profile_screen.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class CampaignsRequestList extends StatelessWidget {
-  const CampaignsRequestList({
+import '../models/completed_donor.dart';
+
+class DonationCompletedList extends StatelessWidget {
+  const DonationCompletedList({
     Key? key,
   }) : super(key: key);
 
@@ -24,7 +25,7 @@ class CampaignsRequestList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Requests",
+              "Completed",
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(
@@ -47,9 +48,9 @@ class CampaignsRequestList extends StatelessWidget {
                   ),
                 ],
                 rows: List.generate(
-                  Constants().requestList.length,
-                  (index) =>
-                      requestDataRow(Constants().requestList[index], context),
+                  Constants().completedDonorList.length,
+                  (index) => donationCompletedDataRow(
+                      Constants().completedDonorList[index], context),
                 ),
               ),
             ),
@@ -59,7 +60,8 @@ class CampaignsRequestList extends StatelessWidget {
     );
   }
 
-  DataRow requestDataRow(Request fileInfo, BuildContext context) {
+  DataRow donationCompletedDataRow(
+      CompletedDonor fileInfo, BuildContext context) {
     return DataRow(
       cells: [
         DataCell(
@@ -81,10 +83,10 @@ class CampaignsRequestList extends StatelessWidget {
         DataCell(Text(fileInfo.name!)),
         DataCell(Text(fileInfo.status!)),
         DataCell(ElevatedButton(
-          child: Text("Action"),
+          child: Text("View"),
           onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => DonorManagementScreen()));
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => DonationProfilePage()));
           },
         )),
       ],

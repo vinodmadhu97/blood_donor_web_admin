@@ -1,10 +1,10 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/models/question.dart';
+import 'package:blood_donor_web_admin/models/history_data.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
-class QAList extends StatelessWidget {
-  const QAList({
+class ProfileHistoryDataList extends StatelessWidget {
+  const ProfileHistoryDataList({
     Key? key,
   }) : super(key: key);
 
@@ -22,7 +22,7 @@ class QAList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Donor Report",
+              "History",
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(
@@ -32,21 +32,16 @@ class QAList extends StatelessWidget {
                 minWidth: 600,
                 columns: [
                   DataColumn(
-                    label: Text("No"),
+                    label: Text(""),
                   ),
                   DataColumn(
-                    label: Text("Question"),
+                    label: Text(""),
                   ),
-                  DataColumn(
-                    label: Text("Answer"),
-                  ),
-                  /*DataColumn(
-                    label: Text(" "),
-                  ),*/
                 ],
                 rows: List.generate(
-                  Constants().qaList.length,
-                  (index) => requestDataRow(Constants().qaList[index], context),
+                  Constants().historyDataList.length,
+                  (index) => availableCampaignsDataRow(
+                      Constants().historyDataList[index], context),
                 ),
               ),
             ),
@@ -56,12 +51,12 @@ class QAList extends StatelessWidget {
     );
   }
 
-  DataRow requestDataRow(Question fileInfo, BuildContext context) {
+  DataRow availableCampaignsDataRow(
+      HistoryData fileInfo, BuildContext context) {
     return DataRow(
       cells: [
-        DataCell(Text(fileInfo.qno!)),
-        DataCell(Text(fileInfo.question!)),
-        DataCell(Text(fileInfo.answer!)),
+        DataCell(Text(fileInfo.type)),
+        DataCell(Text(fileInfo.result)),
       ],
     );
   }

@@ -1,6 +1,6 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
 import 'package:blood_donor_web_admin/models/campaign.dart';
-import 'package:blood_donor_web_admin/screens/staff/single_campaign_screen.dart';
+import 'package:blood_donor_web_admin/screens/staff/single_campaign_management_screen.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -54,8 +54,8 @@ class AvailableCampaignsList extends StatelessWidget {
                 ],
                 rows: List.generate(
                   Constants().campaignsList.length,
-                  (index) =>
-                      availableCampaignsDataRow(Constants().campaignsList[index],context),
+                  (index) => availableCampaignsDataRow(
+                      Constants().campaignsList[index], context),
                 ),
               ),
             ),
@@ -65,7 +65,7 @@ class AvailableCampaignsList extends StatelessWidget {
     );
   }
 
-  DataRow availableCampaignsDataRow(Campaign fileInfo,BuildContext context) {
+  DataRow availableCampaignsDataRow(Campaign fileInfo, BuildContext context) {
     return DataRow(
       cells: [
         DataCell(
@@ -92,7 +92,10 @@ class AvailableCampaignsList extends StatelessWidget {
         ),
         DataCell(ElevatedButton(
           child: Text("View"),
-          onPressed: (){Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SingleCampaignScreen(campaignId: fileInfo.campaignId!)));},
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => SingleCampaignManagementScreen()));
+          },
         )),
       ],
     );

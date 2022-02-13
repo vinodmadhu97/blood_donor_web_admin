@@ -1,14 +1,13 @@
-import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/models/request.dart';
-import 'package:blood_donor_web_admin/screens/staff/donor_management_screen.dart';
+import 'package:blood_donor_web_admin/models/blood_donor.dart';
+import 'package:blood_donor_web_admin/screens/staff/donor_profile_screen.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class CampaignsRequestList extends StatelessWidget {
-  const CampaignsRequestList({
-    Key? key,
-  }) : super(key: key);
+import '../constants/constants.dart';
+
+class RegisteredDonorsList extends StatelessWidget {
+  const RegisteredDonorsList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class CampaignsRequestList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Requests",
+              "Campaigns",
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(
@@ -34,10 +33,22 @@ class CampaignsRequestList extends StatelessWidget {
                 minWidth: 600,
                 columns: [
                   DataColumn(
-                    label: Text("Donor Id"),
+                    label: Text("Donor ID"),
                   ),
                   DataColumn(
                     label: Text("Name"),
+                  ),
+                  DataColumn(
+                    label: Text("NIC"),
+                  ),
+                  DataColumn(
+                    label: Text("Address"),
+                  ),
+                  DataColumn(
+                    label: Text("DOB"),
+                  ),
+                  DataColumn(
+                    label: Text("Phone"),
                   ),
                   DataColumn(
                     label: Text("Status"),
@@ -47,9 +58,9 @@ class CampaignsRequestList extends StatelessWidget {
                   ),
                 ],
                 rows: List.generate(
-                  Constants().requestList.length,
-                  (index) =>
-                      requestDataRow(Constants().requestList[index], context),
+                  Constants().bloodDonorsList.length,
+                  (index) => availableCampaignsDataRow(
+                      Constants().bloodDonorsList[index], context),
                 ),
               ),
             ),
@@ -59,7 +70,7 @@ class CampaignsRequestList extends StatelessWidget {
     );
   }
 
-  DataRow requestDataRow(Request fileInfo, BuildContext context) {
+  DataRow availableCampaignsDataRow(BloodDonor fileInfo, BuildContext context) {
     return DataRow(
       cells: [
         DataCell(
@@ -79,12 +90,22 @@ class CampaignsRequestList extends StatelessWidget {
           ),
         ),
         DataCell(Text(fileInfo.name!)),
-        DataCell(Text(fileInfo.status!)),
+        DataCell(Text(fileInfo.nic!)),
+        DataCell(Text(fileInfo.address!)),
+        DataCell(
+          Text(fileInfo.dob!),
+        ),
+        DataCell(
+          Text(fileInfo.phone!),
+        ),
+        DataCell(
+          Text(fileInfo.status!),
+        ),
         DataCell(ElevatedButton(
-          child: Text("Action"),
+          child: Text("More"),
           onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => DonorManagementScreen()));
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => DonorProfileScreen()));
           },
         )),
       ],
