@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../models/completed_donor.dart';
 import '../models/donation_summary.dart';
+import '../models/staff.dart';
 
 class Constants {
   static const appColorBrownRed = Color(0xffD92027);
@@ -147,6 +148,39 @@ class Constants {
     Question(qno: "8", question: "question 8", answer: "yes"),
     Question(qno: "9", question: "question 9", answer: "yes"),
     Question(qno: "10", question: "question 10", answer: "no"),
+  ];
+
+  List<Staff> currentStaffList = [
+    Staff(
+        staffId: "001",
+        name: "A",
+        email: "abc1@a.com",
+        phone: "1234567",
+        status: "active"),
+    Staff(
+        staffId: "002",
+        name: "B",
+        email: "abc2@a.com",
+        phone: "1234567",
+        status: "inactive"),
+    Staff(
+        staffId: "003",
+        name: "C",
+        email: "abc3@a.com",
+        phone: "1234567",
+        status: "active"),
+    Staff(
+        staffId: "004",
+        name: "D",
+        email: "abc4@a.com",
+        phone: "1234567",
+        status: "inactive"),
+    Staff(
+        staffId: "005",
+        name: "E",
+        email: "abc5@a.com",
+        phone: "1234567",
+        status: "active"),
   ];
 
   List<PieChartSectionData> paiChartSelectionDatas = [

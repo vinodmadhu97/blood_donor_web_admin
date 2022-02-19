@@ -1,6 +1,7 @@
-
 import 'package:blood_donor_web_admin/constants/constants.dart';
 import 'package:blood_donor_web_admin/screens/staff/staff_login_screen.dart';
+import 'package:blood_donor_web_admin/services/firebase_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -11,6 +12,9 @@ class AdminLoginScreen extends StatefulWidget {
 }
 
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String email = "";
+  String password = "";
   @override
   Widget build(BuildContext context) {
     final email = TextFormField(
@@ -20,6 +24,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         hintText: 'Email',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
       ),
+      onChanged: (value) {
+        this.email = value;
+      },
     );
 
     final password = TextFormField(
@@ -30,16 +37,16 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         hintText: 'Password',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
       ),
+      onChanged: (value) {
+        this.password = value;
+      },
     );
 
     final loginButton = Container(
       width: MediaQuery.of(context).size.width / 2.5,
       child: ElevatedButton(
-        onPressed: () {
-          /*Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
-          );*/
+        onPressed: () async {
+          FirebaseServices().adminLogin(this.email, this.password, context);
         },
         child: const Text('LOGIN',
             style: TextStyle(
@@ -57,8 +64,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         ),
       ),
       onPressed: () {
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (_) => const StaffLoginScreen()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const StaffLoginScreen()));
       },
     );
 

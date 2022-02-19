@@ -1,9 +1,9 @@
-
 import 'package:blood_donor_web_admin/constants/constants.dart';
 import 'package:blood_donor_web_admin/screens/staff/dashboard_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'admin_login_screen.dart';
+import '../admin/admin_login_screen.dart';
 
 class StaffLoginScreen extends StatefulWidget {
   const StaffLoginScreen({Key? key}) : super(key: key);
@@ -13,20 +13,39 @@ class StaffLoginScreen extends StatefulWidget {
 }
 
 class _StaffLoginScreenState extends State<StaffLoginScreen> {
+  /*GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
+
+  GlobalKey<FormState> _passwordKey = GlobalKey<FormState>();
+  final TextEditingController _emailController =
+      TextEditingController(text: "username");
+
+  final TextEditingController _passwordController =
+      TextEditingController(text: "passowrd");*/
+
+  String email = "";
+  String password = "";
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
-
-    final email = TextFormField(
+    var email = TextFormField(
+      /*key: _emailKey,
+      controller: _emailController,*/
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
-      decoration:const InputDecoration(
+      decoration: const InputDecoration(
         hintText: 'Email',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
       ),
+      onChanged: (value) {
+        this.email = value;
+      },
     );
 
-    final password = TextFormField(
+    var password = TextFormField(
+      /*key: _passwordKey,
+      controller: _passwordController,*/
       autofocus: false,
       initialValue: '',
       obscureText: true,
@@ -34,18 +53,41 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
         hintText: 'Password',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
       ),
+      onChanged: (value) {
+        this.password = value;
+      },
     );
 
-    final loginButton = Container(
+    var loginButton = Container(
       width: MediaQuery.of(context).size.width / 2.5,
       child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => StaffHomeScreen()),
-          );
-        },
+        onPressed: () async {
+          await _auth
+              .signInWithEmailAndPassword(
+            email: this.email.trim(),
+            password: this.password.trim(),
+          )
+              .then((auth) {
+            if (auth.user != null) {
+              print("---------------- ok");
+              print(this.email);
+              print(this.password);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => StaffHomeScreen()),
+              );
+            }
+          }).catchError((error) {
+            print(this.email);
+            print(this.password);
+            print("---------------- $error");
+            //todo show error
+          });
 
+          /*setState(() {
+            isLoading = false;
+          });*/
+        },
         child: const Text('LOGIN',
             style: TextStyle(
                 fontSize: 16,
@@ -54,15 +96,17 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
       ),
     );
 
-    final adminLogin = ElevatedButton(
+    var adminLogin = ElevatedButton(
       child: const Text(
         'ADMIN LOGIN',
         style: TextStyle(
-            color: Constants.appColorWhite,
-
+          color: Constants.appColorWhite,
         ),
       ),
-      onPressed: () {Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>const AdminLoginScreen()));},
+      onPressed: () {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const AdminLoginScreen()));
+      },
     );
 
     return Scaffold(
@@ -97,19 +141,17 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
                     const SizedBox(height: 62.0),
                     const Center(
                         child: Text(
-                          "STAFF LOGIN",
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Constants.appColorBrownRed
-                          ),
-                        )),
+                      "STAFF LOGIN",
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Constants.appColorBrownRed),
+                    )),
                     const SizedBox(height: 48.0),
                     email,
                     const SizedBox(height: 8.0),
                     password,
                     const SizedBox(height: 24.0),
-
                     loginButton,
                   ],
                 ),
