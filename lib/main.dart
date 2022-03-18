@@ -1,4 +1,4 @@
-import 'package:blood_donor_web_admin/screens/admin/admin_login_screen.dart';
+import 'package:blood_donor_web_admin/screens/staff/staff_dashboard_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
               height: 60,
             );
           } else {
-            return AdminLoginScreen(); //StaffHomeScreen();
+            return StaffDashboardScreen();
           }
         },
       ),

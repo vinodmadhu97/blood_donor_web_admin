@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import '../../constants/constants.dart';
 
 class SingleCampaignManagementScreen extends StatefulWidget {
-  const SingleCampaignManagementScreen({Key? key}) : super(key: key);
+  final String campaignId;
+  final String location;
+  SingleCampaignManagementScreen(
+      {Key? key, required this.campaignId, required this.location})
+      : super(key: key);
 
   @override
   State<SingleCampaignManagementScreen> createState() =>
@@ -28,14 +32,14 @@ class _SingleCampaignManagementScreenState
                 Expanded(
                   flex: 2,
                   child: Text(
-                    "ID : hfjd94n3",
+                    "ID : ${widget.campaignId}",
                     style:
                         TextStyle(color: Constants.appColorWhite, fontSize: 30),
                   ),
                 ),
                 Expanded(
                     flex: 3,
-                    child: Text("Location : Maharagama",
+                    child: Text(widget.location,
                         style: TextStyle(
                             color: Constants.appColorWhite, fontSize: 30))),
               ],
@@ -63,7 +67,9 @@ class _SingleCampaignManagementScreenState
         ),
         body: TabBarView(
           children: [
-            DonationRequestTab(campaignId: "4949483984"),
+            DonationRequestTab(
+              campaignId: widget.campaignId,
+            ),
             CompletedDonorsTab(),
             CampaignSummaryTab()
           ],

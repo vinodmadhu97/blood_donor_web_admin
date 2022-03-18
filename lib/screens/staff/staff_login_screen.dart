@@ -1,5 +1,5 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/screens/staff/dashboard_screen.dart';
+import 'package:blood_donor_web_admin/services/firebase_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -62,31 +62,7 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
       width: MediaQuery.of(context).size.width / 2.5,
       child: ElevatedButton(
         onPressed: () async {
-          await _auth
-              .signInWithEmailAndPassword(
-            email: this.email.trim(),
-            password: this.password.trim(),
-          )
-              .then((auth) {
-            if (auth.user != null) {
-              print("---------------- ok");
-              print(this.email);
-              print(this.password);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => StaffHomeScreen()),
-              );
-            }
-          }).catchError((error) {
-            print(this.email);
-            print(this.password);
-            print("---------------- $error");
-            //todo show error
-          });
-
-          /*setState(() {
-            isLoading = false;
-          });*/
+          FirebaseServices().staffLogin(this.email, this.password, context);
         },
         child: const Text('LOGIN',
             style: TextStyle(

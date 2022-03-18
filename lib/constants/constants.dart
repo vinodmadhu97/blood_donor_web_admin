@@ -313,7 +313,11 @@ class Constants {
       title: Text(title),
       content: Text(description),
       actions: [
-        okButton,
+        ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Ok")),
       ],
     );
 

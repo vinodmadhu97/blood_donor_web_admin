@@ -1,12 +1,13 @@
-import 'dart:convert';
+import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/constants/constants.dart';
 import 'package:blood_donor_web_admin/constants/widget_size.dart';
+import 'package:blood_donor_web_admin/services/firebase_services.dart';
 import 'package:blood_donor_web_admin/widgets/app_input_field.dart';
 import 'package:blood_donor_web_admin/widgets/filled_rounded_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -14,10 +15,6 @@ import 'package:intl/intl.dart';
 import 'package:nanoid/async.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:time_range/time_range.dart';
-import 'package:uuid/uuid.dart';
-import 'dart:html' as html;
-
-import '../../test.dart';
 
 class CreateNewCampaign extends StatefulWidget {
   CreateNewCampaign({Key? key}) : super(key: key);
@@ -35,13 +32,9 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
 
   TextEditingController _locationController = TextEditingController();
 
-  GlobalKey<FormState> _dateKey = GlobalKey<FormState>();
-
   TextEditingController _dateController = TextEditingController();
 
-  GlobalKey<FormState> _durationKey = GlobalKey<FormState>();
-
-  TextEditingController _durationController = TextEditingController();
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   String campaignId = "";
   DateTime selectedDate = DateTime.now();
@@ -60,9 +53,6 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
     //campaignId = uuid.v1();
     _donationController.text = id;
     campaignId = id;
-
-
-
   }
 
   bool _isValidate() {
@@ -117,9 +107,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
       version: QrVersions.auto,
     );
     return Scaffold(
-
       body: SingleChildScrollView(
-
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Text(
             "CREATE CAMPAIGN",
@@ -235,15 +223,6 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                           style: TextStyle(
                               color: Constants.appColorBrownRed, fontSize: 20),
                         ),
-                        /*AppInputField(
-                              formKey: _durationKey,
-                              controller: _durationController,
-                              inputType: TextInputType.text,
-                              validator: MultiValidator([
-                                RequiredValidator(
-                                    errorText: "Duration is Required"),
-                              ]),
-                              hintText: "Duration"),*/
                         TimeRange(
                           fromTitle: Text(
                             'From',
@@ -288,13 +267,9 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                                 setState(() {
                                   qrVisibility = true;
 
-                                  QRdata = "$campaignId,${_dateController.text.toString()},$startTime,${endTime}";
-
-
+                                  QRdata =
+                                      "$campaignId,${_dateController.text.toString()},$startTime,${endTime}";
                                 });
-
-
-
                               }
                             })
                       ],
@@ -304,41 +279,36 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                   flex: 2,
                   child: Column(
                     children: [
-
                       Container(
-
-                          child: Visibility(
-                            visible: qrVisibility,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  child: Center(
-                                    child: RepaintBoundary(
-                                      child: CustomPaint(
-                                          size: Size.square((size * 100).toDouble()),
-                                          key: globalKey,
-                                          painter: _painter),
-                                    ),
+                        child: Visibility(
+                          visible: qrVisibility,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                child: Center(
+                                  child: RepaintBoundary(
+                                    child: CustomPaint(
+                                        size: Size.square(
+                                            (size * 100).toDouble()),
+                                        key: globalKey,
+                                        painter: _painter),
                                   ),
                                 ),
-
-                                SizedBox(height: 20),
-
-                                _buildButton()
-
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 20),
+                              _buildButton()
+                            ],
                           ),
+                        ),
                         width: 600,
                         height: 600,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Constants.appColorBrownRed,width: 3),
-                          borderRadius: BorderRadius.circular(20)
-                        ),
-
+                            border: Border.all(
+                                color: Constants.appColorBrownRed, width: 3),
+                            borderRadius: BorderRadius.circular(20)),
                       ),
                     ],
                   ))
@@ -353,6 +323,14 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
     return ElevatedButton(
         onPressed: () async {
           await _capturePng();
+          FirebaseServices().createNewCampaign(
+              context,
+              campaignId,
+              _locationController.text,
+              _dateController.text,
+              startTime.toString(),
+              endTime.toString(),
+              auth.currentUser!.uid);
         },
         style: ElevatedButton.styleFrom(
           shape: new RoundedRectangleBorder(
@@ -370,7 +348,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
 
   Future<void> writeToFile(ByteData data) async {
     final bytes =
-    data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     final blob = html.Blob([bytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
     final anchor = html.document.createElement('a') as html.AnchorElement
@@ -384,5 +362,4 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
     html.document.body?.children.remove(anchor);
     html.Url.revokeObjectUrl(url);
   }
-
 }

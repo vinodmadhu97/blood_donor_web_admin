@@ -4,7 +4,9 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
 class QAList extends StatelessWidget {
+  final AsyncSnapshot snapshot;
   const QAList({
+    required this.snapshot,
     Key? key,
   }) : super(key: key);
 
@@ -45,8 +47,9 @@ class QAList extends StatelessWidget {
                   ),*/
                 ],
                 rows: List.generate(
-                  Constants().qaList.length,
-                  (index) => requestDataRow(Constants().qaList[index], context),
+                  snapshot.data.data().length,
+                  (index) =>
+                      requestDataRow(snapshot.data.data()[index], context),
                 ),
               ),
             ),

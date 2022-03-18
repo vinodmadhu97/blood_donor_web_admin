@@ -1,11 +1,12 @@
-
 import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/constants/responsive.dart';
+import 'package:blood_donor_web_admin/services/firebase_services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-
 class ProfileCard extends StatelessWidget {
+  final String? staffId;
   const ProfileCard({
+    required this.staffId,
     Key? key,
   }) : super(key: key);
 
@@ -15,7 +16,7 @@ class ProfileCard extends StatelessWidget {
       padding: const EdgeInsets.only(left: Constants.defaultPadding),
       child: Card(
         child: Container(
-          padding:const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: Constants.defaultPadding,
             vertical: Constants.defaultPadding / 2,
           ),
@@ -30,13 +31,28 @@ class ProfileCard extends StatelessWidget {
                 "assets/images/profile_pic.png",
                 height: 38,
               ),
-              if (!Responsive.isMobile(context))
-                const Padding(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: Constants.defaultPadding / 2),
-                  child: Text("Angelina Jolie"),
-                ),
-              const Icon(Icons.keyboard_arrow_down),
+              Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: Constants.defaultPadding / 2),
+                  child: FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseServices().getLoggedStaffDetails(staffId),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text("error");
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        Map<String, dynamic>? data =
+                            snapshot.data?.data() as Map<String, dynamic>?;
+                        return data != null
+                            ? Text("Welcome! ${data['staffName']}")
+                            : Text("Welcome! Admin");
+                      }
+
+                      return Text("loading");
+                    },
+                  )),
             ],
           ),
         ),

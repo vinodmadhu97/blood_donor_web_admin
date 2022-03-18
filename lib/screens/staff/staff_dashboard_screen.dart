@@ -1,63 +1,30 @@
-/*
-import 'package:blood_donor_web_admin/constants/responsive.dart';
-import 'package:blood_donor_web_admin/controller/menu_controller.dart';
-import 'package:blood_donor_web_admin/screens/staff/available_campaigns.dart';
-import 'package:blood_donor_web_admin/screens/staff/staff_home_screen.dart';
-import 'package:blood_donor_web_admin/widgets/slide_menu.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-class StaffDashboardScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: context.read<MenuController>().scaffoldKey,
-      drawer: SideMenu(),
-      body: SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // We want this side menu only for large screen
-            if (Responsive.isDesktop(context))
-              Expanded(
-                // default flex = 1
-                // and it takes 1/6 part of the screen
-                child: SideMenu(),
-              ),
-            Expanded(
-              // It takes 5/6 part of the screen
-              flex: 5,
-              child: AvailableCampaign(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}*/
 import 'package:blood_donor_web_admin/constants/constants.dart';
+import 'package:blood_donor_web_admin/screens/staff/assessments_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/blood_donor_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/create_new_campaign_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/notification_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/staff_login_screen.dart';
 import 'package:blood_donor_web_admin/widgets/profile_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'available_campaigns_screen.dart';
 
-class StaffHomeScreen extends StatefulWidget {
+class StaffDashboardScreen extends StatefulWidget {
   @override
-  StaffHomeScreenState createState() => StaffHomeScreenState();
+  StaffDashboardScreenState createState() => StaffDashboardScreenState();
 }
 
-class StaffHomeScreenState extends State<StaffHomeScreen>
+class StaffDashboardScreenState extends State<StaffDashboardScreen>
     with SingleTickerProviderStateMixin {
+  var userId = FirebaseAuth.instance.currentUser?.uid;
   late TabController tabController;
   int active = 0;
   @override
   void initState() {
     super.initState();
-    tabController = new TabController(vsync: this, length: 4, initialIndex: 0)
+    tabController = new TabController(vsync: this, length: 5, initialIndex: 0)
       ..addListener(() {
         setState(() {
           active = tabController.index;
@@ -82,7 +49,9 @@ class StaffHomeScreenState extends State<StaffHomeScreen>
           style: TextStyle(color: Constants.appColorWhite, fontSize: 25),
         ),
         actions: <Widget>[
-          ProfileCard(),
+          ProfileCard(
+            staffId: userId,
+          ),
           SizedBox(width: 32),
           Container(
             child: IconButton(
@@ -122,6 +91,7 @@ class StaffHomeScreenState extends State<StaffHomeScreen>
               children: [
                 AvailableCampaign(),
                 CreateNewCampaign(),
+                AssessmentScreen(),
                 BloodDonorScreen(),
                 NotificationScreen()
               ],
@@ -204,7 +174,36 @@ class StaffHomeScreenState extends State<StaffHomeScreen>
         FlatButton(
           color: tabController.index == 2 ? Colors.grey[100] : Colors.white,
           onPressed: () {
+            print(tabController.index);
             tabController.animateTo(2);
+            drawerStatus ? Navigator.pop(context) : print("");
+          },
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: EdgeInsets.only(top: 22, bottom: 22, right: 22),
+              child: Row(children: [
+                SvgPicture.asset(
+                  "assets/icons/qr-code.svg",
+                  color: Constants.appColorGray,
+                  height: 20,
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  "Assessments",
+                  style: TextStyle(
+                      fontSize: 18, color: Constants.appColorBrownRed),
+                ),
+              ]),
+            ),
+          ),
+        ),
+        FlatButton(
+          color: tabController.index == 3 ? Colors.grey[100] : Colors.white,
+          onPressed: () {
+            tabController.animateTo(3);
             drawerStatus ? Navigator.pop(context) : print("");
           },
           child: Align(
@@ -232,9 +231,9 @@ class StaffHomeScreenState extends State<StaffHomeScreen>
           ),
         ),
         FlatButton(
-          color: tabController.index == 2 ? Colors.grey[100] : Colors.white,
+          color: tabController.index == 4 ? Colors.grey[100] : Colors.white,
           onPressed: () {
-            tabController.animateTo(2);
+            tabController.animateTo(4);
             drawerStatus ? Navigator.pop(context) : print("");
           },
           child: Align(
