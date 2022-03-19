@@ -85,9 +85,6 @@ class AssessmentScreen extends StatelessWidget {
                               minWidth: 600,
                               columns: [
                                 DataColumn(
-                                  label: Text("assessment Id"),
-                                ),
-                                DataColumn(
                                   label: Text("assessment"),
                                 ),
                                 DataColumn(
@@ -138,7 +135,6 @@ class AssessmentScreen extends StatelessWidget {
           ),
         ),
         DataCell(Text(snapshot['assessment']['as_en'])),
-        DataCell(Text(snapshot['answer'])),
         DataCell(Row(
           children: [
             ElevatedButton(

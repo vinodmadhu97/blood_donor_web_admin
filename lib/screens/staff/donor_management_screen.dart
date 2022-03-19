@@ -4,6 +4,7 @@ import 'package:blood_donor_web_admin/widgets/q&a_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:intl/intl.dart';
 
 class DonorManagementScreen extends StatefulWidget {
   final String campaignId;
@@ -32,7 +33,46 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
   TextEditingController cvsStatusController = TextEditingController();
   TextEditingController bpController = TextEditingController();
   TextEditingController deferralController = TextEditingController();
-  TextEditingController rematksController = TextEditingController();
+  TextEditingController remarksController = TextEditingController();
+
+  bool isVerifiedForReject() {
+    if (barcodeController.text.isEmpty) {
+      return false;
+    } else if (weightController.text.isEmpty) {
+      return false;
+    } else if (bloodGroupController.text.isEmpty) {
+      return false;
+    } else if (cvsStatusController.text.isEmpty) {
+      return false;
+    } else if (bpController.text.isEmpty) {
+      return false;
+    } else if (deferralController.text.isEmpty) {
+      return false;
+    } else if (remarksController.text.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool isVerifiedForAccept() {
+    if (barcodeController.text.isEmpty) {
+      return false;
+    } else if (weightController.text.isEmpty) {
+      return false;
+    } else if (bloodGroupController.text.isEmpty) {
+      return false;
+    } else if (cvsStatusController.text.isEmpty) {
+      return false;
+    } else if (bpController.text.isEmpty) {
+      return false;
+    } else if (remarksController.text.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -250,8 +290,10 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                       );
                     }),
                 FutureBuilder(
-                    future: FirebaseServices().getDonorAssessmentData(
-                        widget.donorId, widget.campaignId),
+                    future: Future.wait([
+                      FirebaseServices().getDonorAssessmentData(
+                          widget.donorId, widget.campaignId),
+                    ]),
                     builder: (ctx, AsyncSnapshot snapshot) {
                       if (snapshot.hasError) {
                         return Text(snapshot.error.toString());
@@ -269,7 +311,7 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                   height: 20,
                 ),
                 Text(
-                  "Registration",
+                  "Report",
                   style: TextStyle(
                       color: Constants.appColorBrownRed, fontSize: 30),
                 ),
@@ -882,7 +924,7 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                                 height: 40,
                                 width: 300,
                                 child: TextField(
-                                  controller: rematksController,
+                                  controller: remarksController,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       color: Constants.appColorBlack,
@@ -917,8 +959,69 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                             children: [
                               Visibility(
                                 child: ElevatedButton(
-                                    onPressed: () {
-                                      print("Accepted");
+                                    onPressed: () async {
+                                      if (!deferral) {
+                                        if (isVerifiedForAccept()) {
+                                          print(barcodeController.text);
+                                          print("verify $verified");
+                                          print(weightController.text);
+                                          print(bloodGroupController.text);
+                                          print("feeling $feelingWell");
+                                          print("last meel $lastMeal");
+                                          print("alagi $allergies");
+                                          print("sleep $isSleep");
+                                          print("hospitalized $hospitalised");
+                                          print("risk $riskBehaviours");
+                                          print(cvsStatusController.text);
+                                          print(bpController.text);
+                                          print(deferral);
+                                          print(remarksController.text);
+
+                                          DateTime now = DateTime.now();
+                                          var formatterDate =
+                                              DateFormat('yyyy-MM-dd');
+                                          String actualDate =
+                                              formatterDate.format(now);
+
+                                          Map<String, dynamic> data = {
+                                            "isVerified":
+                                                verified ? "yes" : "no",
+                                            "barcode": barcodeController.text,
+                                            "weight": weightController.text,
+                                            "bloodGroup":
+                                                bloodGroupController.text,
+                                            "feelingWell":
+                                                feelingWell ? "yes" : "no",
+                                            "lastMeal": lastMeal ? "yes" : "no",
+                                            "allergies":
+                                                allergies ? "yes" : "no",
+                                            "isSlept": isSleep ? "yes" : "no",
+                                            "hospitalized":
+                                                hospitalised ? "yes" : "no",
+                                            "isRisk":
+                                                riskBehaviours ? "yes" : "no",
+                                            "cvs": cvsStatusController.text,
+                                            "bp": bpController.text,
+                                            "deferral": deferral ? "yes" : "no",
+                                            "remark": remarksController.text,
+                                            "remarkForDeferral": "",
+                                            "accept": "yes",
+                                            "date": actualDate
+                                          };
+
+                                          await FirebaseServices()
+                                              .setMedicalReport(
+                                                  context,
+                                                  widget.campaignId,
+                                                  widget.donorId,
+                                                  data);
+                                        } else {
+                                          Constants.showAlertDialog(
+                                              context,
+                                              "Alert",
+                                              "Please Fill out the All Fields");
+                                        }
+                                      }
                                     },
                                     child: Text("Accept")),
                                 visible: !deferral,
@@ -927,8 +1030,83 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                                 width: 20,
                               ),
                               ElevatedButton(
-                                  onPressed: () {
-                                    print("Reject");
+                                  onPressed: () async {
+                                    if (deferral) {
+                                      if (isVerifiedForReject()) {
+                                        DateTime now = DateTime.now();
+                                        var formatterDate =
+                                            DateFormat('yyyy-MM-dd');
+                                        String actualDate =
+                                            formatterDate.format(now);
+
+                                        Map<String, dynamic> data = {
+                                          "isVerified": verified ? "yes" : "no",
+                                          "barcode": barcodeController.text,
+                                          "weight": weightController.text,
+                                          "bloodGroup":
+                                              bloodGroupController.text,
+                                          "feelingWell":
+                                              feelingWell ? "yes" : "no",
+                                          "lastMeal": lastMeal ? "yes" : "no",
+                                          "allergies": allergies ? "yes" : "no",
+                                          "isSlept": isSleep ? "yes" : "no",
+                                          "hospitalized":
+                                              hospitalised ? "yes" : "no",
+                                          "isRisk":
+                                              riskBehaviours ? "yes" : "no",
+                                          "cvs": cvsStatusController.text,
+                                          "bp": bpController.text,
+                                          "deferral": deferral ? "yes" : "no",
+                                          "remark": remarksController.text,
+                                          "remarkForDeferral":
+                                              deferralController.text,
+                                          "accept": "no",
+                                          "date": actualDate
+                                        };
+
+                                        await FirebaseServices()
+                                            .setMedicalReport(
+                                                context,
+                                                widget.campaignId,
+                                                widget.donorId,
+                                                data);
+                                      }
+                                    } else if (!deferral) {
+                                      DateTime now = DateTime.now();
+                                      var formatterDate =
+                                          DateFormat('yyyy-MM-dd');
+                                      String actualDate =
+                                          formatterDate.format(now);
+
+                                      Map<String, dynamic> data = {
+                                        "isVerified": verified ? "yes" : "no",
+                                        "barcode": barcodeController.text,
+                                        "weight": weightController.text,
+                                        "bloodGroup": bloodGroupController.text,
+                                        "feelingWell":
+                                            feelingWell ? "yes" : "no",
+                                        "lastMeal": lastMeal ? "yes" : "no",
+                                        "allergies": allergies ? "yes" : "no",
+                                        "isSlept": isSleep ? "yes" : "no",
+                                        "hospitalized":
+                                            hospitalised ? "yes" : "no",
+                                        "isRisk": riskBehaviours ? "yes" : "no",
+                                        "cvs": cvsStatusController.text,
+                                        "bp": bpController.text,
+                                        "deferral": deferral ? "yes" : "no",
+                                        "remark": remarksController.text,
+                                        "remarkForDeferral":
+                                            deferralController.text,
+                                        "accept": "no",
+                                        "date": actualDate
+                                      };
+
+                                      await FirebaseServices().setMedicalReport(
+                                          context,
+                                          widget.campaignId,
+                                          widget.donorId,
+                                          data);
+                                    }
                                   },
                                   child: Text("Reject"),
                                   style: ElevatedButton.styleFrom(

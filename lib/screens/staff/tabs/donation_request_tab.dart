@@ -83,6 +83,9 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Text("Loading");
                     }
+                    var newSnapshot = snapshot.data!.docs.where(
+                        (QueryDocumentSnapshot element) =>
+                            element['request'] == "yes");
 
                     return Card(
                       elevation: 10,
@@ -120,7 +123,7 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
                                   )
                                 ],
                                 rows: List.generate(
-                                  snapshot.data!.docs.length,
+                                  newSnapshot.length,
                                   (index) => requestDataRow(
                                       snapshot.data!.docs[index],
                                       context,
@@ -143,7 +146,9 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Text("Loading");
                     }
-
+                    var newSnapshot = snapshot.data!.docs.where(
+                        (QueryDocumentSnapshot element) =>
+                            element['request'] == "yes");
                     return Card(
                       elevation: 10,
                       child: Container(
@@ -180,7 +185,7 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
                                   )
                                 ],
                                 rows: List.generate(
-                                  snapshot.data!.docs.length,
+                                  newSnapshot.length,
                                   (index) => requestDataRow(
                                       snapshot.data!.docs[index],
                                       context,

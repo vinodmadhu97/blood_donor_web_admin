@@ -3,6 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 import '../constants/constants.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
@@ -319,7 +320,104 @@ class FirebaseServices {
             .doc(campaignId)
             .collection("donorRequests")
             .doc(donorId)
+            .collection("answers")
+            .doc("result")
             .get();
+
+    return donorSnapshot;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getAssessmentData() {
+    final Future<QuerySnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance.collection("assessments").get();
+
+    return donorSnapshot;
+  }
+
+  Future<void> setMedicalReport(BuildContext context, String campaignId,
+      String donorId, Map<String, dynamic> data) async {
+    try {
+      firestore
+          .collection("campaigns")
+          .doc(campaignId)
+          .collection("donorRequests")
+          .doc(donorId)
+          .collection("answers")
+          .doc("reportData")
+          .set(data)
+          .then((value) async {
+        var donor = await firestore.collection("donors").doc(donorId).get();
+        String donationCount = donor.data()!['numberOfDonation'];
+        int updatedCount = int.parse(donationCount);
+        updatedCount++;
+
+        var date = DateTime.parse(data['date']);
+        var newDate = DateTime(date.year, date.month + 4, date.day);
+        DateFormat formatter = DateFormat('yyyy-MM-dd');
+        String formattedDate = formatter.format(newDate);
+
+        Map<String, dynamic> donorData = {
+          "numberOfDonation": updatedCount.toString(),
+          "bloodGroup": data["bloodGroup"],
+          "nextDonationDate": formattedDate,
+        };
+
+        var campaign =
+            await firestore.collection("campaigns").doc(campaignId).get();
+        var location = campaign.data()!["location"];
+
+        Map<String, dynamic> donorHistory = {
+          "location": location,
+          "barcode": data["barcode"],
+          "date": data["date"]
+        };
+
+        firestore
+            .collection("donors")
+            .doc(donorId)
+            .set(donorData, SetOptions(merge: true))
+            .then((value) {
+          firestore
+              .collection("donors")
+              .doc(donorId)
+              .collection("history")
+              .doc(campaignId)
+              .set(donorHistory)
+              .then((value) async {
+            await firestore
+                .collection("campaigns")
+                .doc(campaignId)
+                .collection("donorRequests")
+                .doc(donorId)
+                .set({"request": "no"}, SetOptions(merge: true));
+            Navigator.of(context).pop();
+            Constants.showAlertDialog(context, "Alert", "Assessment Completed");
+          });
+        });
+      });
+    } catch (e) {
+      Constants.showAlertDialog(context, "Alert", e.toString());
+    }
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getMedicalData(
+      String campaignId, String donorId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("donorRequests")
+            .doc(donorId)
+            .collection("answers")
+            .doc("reportData")
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getSummery() {
+    final Future<QuerySnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance.collection("summery").get();
 
     return donorSnapshot;
   }

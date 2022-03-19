@@ -1,5 +1,5 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
-import 'package:blood_donor_web_admin/models/question.dart';
+import 'package:blood_donor_web_admin/models/question_answer.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +12,13 @@ class QAList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> assessResult = snapshot.data[0].data();
+
+    List<QuestionAnswer> answers = assessResult.entries
+        .map((value) =>
+            QuestionAnswer(questionId: value.key, answer: value.value))
+        .toList();
+
     return Card(
       elevation: 10,
       child: Container(
@@ -32,10 +39,10 @@ class QAList extends StatelessWidget {
               child: DataTable2(
                 columnSpacing: Constants.defaultPadding,
                 minWidth: 600,
-                columns: [
-                  DataColumn(
+                columns: const [
+                  /*DataColumn(
                     label: Text("No"),
-                  ),
+                  ),*/
                   DataColumn(
                     label: Text("Question"),
                   ),
@@ -47,9 +54,8 @@ class QAList extends StatelessWidget {
                   ),*/
                 ],
                 rows: List.generate(
-                  snapshot.data.data().length,
-                  (index) =>
-                      requestDataRow(snapshot.data.data()[index], context),
+                  answers.length,
+                  (index) => requestDataRow(answers[index], context),
                 ),
               ),
             ),
@@ -59,12 +65,12 @@ class QAList extends StatelessWidget {
     );
   }
 
-  DataRow requestDataRow(Question fileInfo, BuildContext context) {
+  DataRow requestDataRow(QuestionAnswer fileInfo, BuildContext context) {
     return DataRow(
       cells: [
-        DataCell(Text(fileInfo.qno!)),
-        DataCell(Text(fileInfo.question!)),
-        DataCell(Text(fileInfo.answer!)),
+        DataCell(Text(fileInfo.questionId)),
+        DataCell(Text(fileInfo.answer)),
+        /*DataCell(Text(fileInfo.answer!)),*/
       ],
     );
   }

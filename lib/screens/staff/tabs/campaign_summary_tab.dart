@@ -18,6 +18,14 @@ class CampaignSummaryTab extends StatelessWidget {
             Row(
               children: [
                 BloodCountInfoCard(
+                    title: "Total Requests",
+                    svgSrc: "assets/icons/campaign-logo.svg",
+                    amountOfFiles: "350",
+                    numOfFiles: 220),
+                SizedBox(
+                  width: 50,
+                ),
+                BloodCountInfoCard(
                     title: "Completed Donations",
                     svgSrc: "assets/icons/campaign-logo.svg",
                     amountOfFiles: "350",
