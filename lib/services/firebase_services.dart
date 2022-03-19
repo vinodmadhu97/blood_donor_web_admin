@@ -415,9 +415,97 @@ class FirebaseServices {
     return donorSnapshot;
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getSummery() {
-    final Future<QuerySnapshot<Map<String, dynamic>>> donorSnapshot =
-        FirebaseFirestore.instance.collection("summery").get();
+  Future<DocumentSnapshot<Map<String, dynamic>>> getTotalRequests(
+      String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('totalRequest')
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getCompletedRequests(
+      String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('completedRequest')
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getRejectedRequests(
+      String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('rejectedRequest')
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getGroupA(String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('completedRequest')
+            .collection("group")
+            .doc("a")
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getGroupB(String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('completedRequest')
+            .collection("group")
+            .doc("b")
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getGroupAB(String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('completedRequest')
+            .collection("group")
+            .doc("ab")
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getGroupO(String campaignId) {
+    final Future<DocumentSnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc('completedRequest')
+            .collection("group")
+            .doc("o")
+            .get();
 
     return donorSnapshot;
   }

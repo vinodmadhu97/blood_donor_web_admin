@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../constants/constants.dart';
-import '../models/donation_summary.dart';
 
 class BloodGroupInfoCard extends StatelessWidget {
-  const BloodGroupInfoCard({
-    Key? key,
-    required this.donationInfo,
-  }) : super(key: key);
-
-  final DonationSummary donationInfo;
+  final Color color;
+  final String svgUrl;
+  final String count;
+  final int percentage;
+  final String group;
+  const BloodGroupInfoCard(
+      {Key? key,
+      required this.color,
+      required this.svgUrl,
+      required this.count,
+      required this.percentage,
+      required this.group})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,38 +41,38 @@ class BloodGroupInfoCard extends StatelessWidget {
                   height: 40,
                   width: 40,
                   decoration: BoxDecoration(
-                    color: donationInfo.color!.withOpacity(0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
                   child: SvgPicture.asset(
-                    donationInfo.svgSrc!,
-                    color: donationInfo.color,
+                    svgUrl,
+                    color: color,
                   ),
                 ),
                 Icon(Icons.more_vert, color: Colors.white54)
               ],
             ),
             Text(
-              "Group : ${donationInfo.group!}",
+              "Group : $group",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: donationInfo.color, fontSize: 20),
+              style: TextStyle(color: color, fontSize: 20),
             ),
             Text(
-              "Counts : ${donationInfo.count!}",
+              "Counts : $count",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: donationInfo.color, fontSize: 20),
+              style: TextStyle(color: color, fontSize: 20),
             ),
             Text(
-              "25%",
+              "$percentage%",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: donationInfo.color, fontSize: 20),
+              style: TextStyle(color: color, fontSize: 20),
             ),
             ProgressLine(
-              color: donationInfo.color,
-              percentage: 25,
+              color: color,
+              percentage: percentage,
             ),
           ],
         ),

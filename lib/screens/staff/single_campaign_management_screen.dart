@@ -73,7 +73,9 @@ class _SingleCampaignManagementScreenState
             CompletedDonorsTab(
               campaignId: widget.campaignId,
             ),
-            CampaignSummaryTab()
+            CampaignSummaryTab(
+              campaignId: widget.campaignId,
+            )
           ],
         ),
       ),
