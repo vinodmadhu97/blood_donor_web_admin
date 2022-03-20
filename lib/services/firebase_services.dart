@@ -201,6 +201,7 @@ class FirebaseServices {
       String startTime,
       String endTime,
       String createdBy) async {
+    print("_____________hit__________");
     try {
       firestore.collection("campaigns").doc(campaignId).set({
         "campaignId": campaignId,

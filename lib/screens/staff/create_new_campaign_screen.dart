@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:blood_donor_web_admin/constants/constants.dart';
 import 'package:blood_donor_web_admin/constants/widget_size.dart';
-import 'package:blood_donor_web_admin/services/firebase_services.dart';
 import 'package:blood_donor_web_admin/widgets/app_input_field.dart';
 import 'package:blood_donor_web_admin/widgets/filled_rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +14,8 @@ import 'package:intl/intl.dart';
 import 'package:nanoid/async.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:time_range/time_range.dart';
+
+import '../../services/firebase_services.dart';
 
 class CreateNewCampaign extends StatefulWidget {
   CreateNewCampaign({Key? key}) : super(key: key);
@@ -132,7 +133,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                         const Text(
                           "Campaign ID",
                           style: TextStyle(
-                              color: Constants.appColorBrownRed, fontSize: 20),
+                              color: Constants.appColorBrownRed, fontSize: 16),
                         ),
                         SizedBox(
                           height: 10,
@@ -153,7 +154,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                         const Text(
                           "Location",
                           style: TextStyle(
-                              color: Constants.appColorBrownRed, fontSize: 20),
+                              color: Constants.appColorBrownRed, fontSize: 16),
                         ),
                         SizedBox(
                           height: 10,
@@ -173,7 +174,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                         const Text(
                           "Date",
                           style: TextStyle(
-                              color: Constants.appColorBrownRed, fontSize: 20),
+                              color: Constants.appColorBrownRed, fontSize: 16),
                         ),
                         SizedBox(
                           height: 10,
@@ -221,18 +222,18 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                         const Text(
                           "Duration",
                           style: TextStyle(
-                              color: Constants.appColorBrownRed, fontSize: 20),
+                              color: Constants.appColorBrownRed, fontSize: 16),
                         ),
                         TimeRange(
                           fromTitle: Text(
                             'From',
                             style: TextStyle(
-                                fontSize: 18, color: Constants.appColorGray),
+                                fontSize: 12, color: Constants.appColorGray),
                           ),
                           toTitle: Text(
                             'To',
                             style: TextStyle(
-                                fontSize: 18, color: Constants.appColorGray),
+                                fontSize: 12, color: Constants.appColorGray),
                           ),
                           titlePadding: 20,
                           textStyle: TextStyle(
@@ -260,7 +261,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                         FilledRoundedButton(
                             text: "Create",
                             widgetSize: WidgetSize.large,
-                            clickEvent: () {
+                            clickEvent: () async {
                               var result = _isValidate();
 
                               if (result) {
@@ -270,6 +271,16 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                                   QRdata =
                                       "$campaignId,${_dateController.text.toString()},$startTime,${endTime}";
                                 });
+
+                                await _capturePng();
+                                FirebaseServices().createNewCampaign(
+                                    context,
+                                    campaignId,
+                                    _locationController.text,
+                                    _dateController.text,
+                                    startTime.toString(),
+                                    endTime.toString(),
+                                    auth.currentUser!.uid);
                               }
                             })
                       ],
@@ -291,20 +302,20 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
                                 child: Center(
                                   child: RepaintBoundary(
                                     child: CustomPaint(
-                                        size: Size.square(
-                                            (size * 100).toDouble()),
+                                        size:
+                                            Size.square((size * 50).toDouble()),
                                         key: globalKey,
                                         painter: _painter),
                                   ),
                                 ),
                               ),
                               SizedBox(height: 20),
-                              _buildButton()
+                              //_buildButton()
                             ],
                           ),
                         ),
-                        width: 600,
-                        height: 600,
+                        width: 400,
+                        height: 400,
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: Constants.appColorBrownRed, width: 3),
@@ -319,7 +330,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
     );
   }
 
-  Widget _buildButton() {
+  /*Widget _buildButton() {
     return ElevatedButton(
         onPressed: () async {
           await _capturePng();
@@ -338,7 +349,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
           ),
         ),
         child: Text('Download'));
-  }
+  }*/
 
   Future<void> _capturePng() async {
     final picData = await _painter?.toImageData((size * 100).toDouble(),

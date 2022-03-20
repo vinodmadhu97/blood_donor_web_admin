@@ -112,9 +112,6 @@ class _AvailableCampaignState extends State<AvailableCampaign> {
                                       label: Text("Time"),
                                     ),
                                     DataColumn(
-                                      label: Text("Status"),
-                                    ),
-                                    DataColumn(
                                       label: Text(""),
                                     ),
                                   ],
@@ -178,9 +175,6 @@ class _AvailableCampaignState extends State<AvailableCampaign> {
                                       label: Text("Time"),
                                     ),
                                     DataColumn(
-                                      label: Text("Status"),
-                                    ),
-                                    DataColumn(
                                       label: Text(""),
                                     ),
                                   ],
@@ -228,9 +222,6 @@ class _AvailableCampaignState extends State<AvailableCampaign> {
         DataCell(Text(snapshot['date'])),
         DataCell(
             Text("${snapshot['startTime']}.00 to ${snapshot['endTime']}.00")),
-        DataCell(
-          Text(snapshot["status"]),
-        ),
         DataCell(ElevatedButton(
           child: Text("View"),
           onPressed: () {
