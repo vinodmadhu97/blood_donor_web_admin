@@ -23,6 +23,9 @@ class FirebaseServices {
   final Stream<QuerySnapshot> assessmentStream =
       FirebaseFirestore.instance.collection('assessments').snapshots();
 
+  final Stream<QuerySnapshot> allDonorsStream =
+      FirebaseFirestore.instance.collection('donors').snapshots();
+
   Future adminLogin(String email, String password, BuildContext context) async {
     try {
       await auth
@@ -506,6 +509,22 @@ class FirebaseServices {
             .doc('completedRequest')
             .collection("group")
             .doc("o")
+            .get();
+
+    return donorSnapshot;
+  }
+
+  Stream<QuerySnapshot> getAllDonorsCollection() {
+    return allDonorsStream;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getDonorHistoryById(
+      String donorId) {
+    final Future<QuerySnapshot<Map<String, dynamic>>> donorSnapshot =
+        FirebaseFirestore.instance
+            .collection("donors")
+            .doc(donorId)
+            .collection("history")
             .get();
 
     return donorSnapshot;
