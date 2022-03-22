@@ -3,6 +3,7 @@ import 'package:blood_donor_web_admin/screens/staff/assessments_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/blood_donor_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/create_new_campaign_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/notification_screen.dart';
+import 'package:blood_donor_web_admin/screens/staff/staff_account_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/staff_login_screen.dart';
 import 'package:blood_donor_web_admin/widgets/profile_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +25,7 @@ class StaffDashboardScreenState extends State<StaffDashboardScreen>
   @override
   void initState() {
     super.initState();
-    tabController = new TabController(vsync: this, length: 5, initialIndex: 0)
+    tabController = new TabController(vsync: this, length: 6, initialIndex: 0)
       ..addListener(() {
         setState(() {
           active = tabController.index;
@@ -93,7 +94,8 @@ class StaffDashboardScreenState extends State<StaffDashboardScreen>
                 CreateNewCampaign(),
                 AssessmentScreen(),
                 BloodDonorScreen(),
-                NotificationScreen()
+                NotificationScreen(),
+                StaffAccountScreen()
               ],
             ),
           )
@@ -251,6 +253,35 @@ class StaffDashboardScreenState extends State<StaffDashboardScreen>
                 ),
                 Text(
                   "Notifications",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'HelveticaNeue',
+                      color: Constants.appColorBrownRed),
+                ),
+              ]),
+            ),
+          ),
+        ),
+        FlatButton(
+          color: tabController.index == 5 ? Colors.grey[100] : Colors.white,
+          onPressed: () {
+            tabController.animateTo(5);
+            drawerStatus ? Navigator.pop(context) : print("");
+          },
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: EdgeInsets.only(top: 22, bottom: 22, right: 22),
+              child: Row(children: [
+                Icon(
+                  Icons.person,
+                  color: Constants.appColorGray,
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  "Account",
                   style: TextStyle(
                       fontSize: 18,
                       fontFamily: 'HelveticaNeue',

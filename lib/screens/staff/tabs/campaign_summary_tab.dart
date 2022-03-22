@@ -88,32 +88,47 @@ class CampaignSummaryTab extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text("Loading");
                   }
+
+                  var aPersentage = 0;
+                  var bPersentage = 0;
+                  var abPersentage = 0;
+                  var oPersentage = 0;
                   var totalCompletedCount = snapshot.data![0]['count'];
                   var totalCount = snapshot.data![5]['count'];
 
                   var aPosCount = snapshot.data![1]['a+'];
                   var aNegCount = snapshot.data![1]['a-'];
                   var aTotACount = aPosCount + aNegCount;
-                  var aPersentage =
-                      ((aTotACount / totalCompletedCount) * 100).toInt();
+                  if (aTotACount != 0 && totalCompletedCount != 0) {
+                    aPersentage =
+                        ((aTotACount / totalCompletedCount) * 100).toInt();
+                  }
 
                   var bPosCount = snapshot.data![2]['b+'];
                   var bNegCount = snapshot.data![2]['b-'];
                   var bTotACount = bPosCount + bNegCount;
-                  var bPersentage =
-                      ((bTotACount / totalCompletedCount) * 100).toInt();
+
+                  if (bTotACount != 0 && totalCompletedCount != 0) {
+                    bPersentage =
+                        ((bTotACount / totalCompletedCount) * 100).toInt();
+                  }
 
                   var abPosCount = snapshot.data![3]['ab+'];
                   var abNegCount = snapshot.data![3]['ab-'];
                   var abTotACount = abPosCount + abNegCount;
-                  var abPersentage =
-                      ((abTotACount / totalCompletedCount) * 100).toInt();
+
+                  if (abTotACount != 0 && totalCompletedCount != 0) {
+                    abPersentage =
+                        ((abTotACount / totalCompletedCount) * 100).toInt();
+                  }
 
                   var oPosCount = snapshot.data![4]['o+'];
                   var oNegCount = snapshot.data![4]['o-'];
                   var oTotACount = oPosCount + oNegCount;
-                  var oPersentage =
-                      ((oTotACount / totalCompletedCount) * 100).toInt();
+                  if (oTotACount != 0 && totalCompletedCount != 0) {
+                    oPersentage =
+                        ((oTotACount / totalCompletedCount) * 100).toInt();
+                  }
 
                   return Column(
                     children: [

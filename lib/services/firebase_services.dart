@@ -150,6 +150,20 @@ class FirebaseServices {
     }
   }
 
+  Future changeStaffPassword(String password, BuildContext context) async {
+    print(password);
+    try {
+      await auth.currentUser?.updatePassword(password).then((value) {
+        Constants.showAlertDialog(
+            context, "Alert", "Password has been changed");
+      }).catchError((error) {
+        Constants.showAlertDialog(context, "Alert", "$error");
+      });
+    } catch (error) {
+      Constants.showAlertDialog(context, "Alert", "$error");
+    }
+  }
+
   bool adminLogout(BuildContext context) {
     try {
       auth.signOut();
@@ -204,7 +218,6 @@ class FirebaseServices {
       String startTime,
       String endTime,
       String createdBy) async {
-    print("_____________hit__________");
     try {
       firestore.collection("campaigns").doc(campaignId).set({
         "campaignId": campaignId,
@@ -213,8 +226,67 @@ class FirebaseServices {
         "startTime": startTime,
         "endTime": endTime,
         "createdBy": auth.currentUser!.uid
-      }).then((value) => Constants.showAlertDialog(
-          context, "Alert", "New campaign has been created"));
+      }).then((value) async {
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("completedRequest")
+            .set({
+          "count": 0,
+        });
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("rejectedRequest")
+            .set({
+          "count": 0,
+        });
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("totalRequest")
+            .set({
+          "count": 0,
+        });
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("completedRequest")
+            .collection("group")
+            .doc("a")
+            .set({"a+": 0, "a-": 0});
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("completedRequest")
+            .collection("group")
+            .doc("ab")
+            .set({"ab+": 0, "ab-": 0});
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("completedRequest")
+            .collection("group")
+            .doc("b")
+            .set({"b+": 0, "b-": 0});
+        await firestore
+            .collection("campaigns")
+            .doc(campaignId)
+            .collection("summery")
+            .doc("completedRequest")
+            .collection("group")
+            .doc("o")
+            .set({"o+": 0, "o-": 0});
+
+        Constants.showAlertDialog(
+            context, "Alert", "New campaign has been created");
+      });
     } catch (error) {
       Constants.showAlertDialog(context, "Alert", error.toString());
     }
