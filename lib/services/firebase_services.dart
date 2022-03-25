@@ -1,8 +1,10 @@
+import 'package:blood_donor_web_admin/constants/custom_dialog_box.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import '../constants/constants.dart';
@@ -28,12 +30,14 @@ class FirebaseServices {
 
   Future adminLogin(String email, String password, BuildContext context) async {
     try {
+      CustomDialogBox.buildDialogBox();
       await auth
           .signInWithEmailAndPassword(
         email: email,
         password: password,
       )
           .then((auth) {
+        Get.back();
         auth.user?.getIdTokenResult().then((idTokenResult) {
           print(idTokenResult.claims?['admin']);
           if (idTokenResult.claims?['admin']) {
@@ -44,17 +48,26 @@ class FirebaseServices {
           }
         });
       }).catchError((error) {
-        Constants.showAlertDialog(context, "Alert", "$error");
+        Get.back();
+        CustomDialogBox.buildOkDialog(
+          description: "$error",
+        );
+        //Constants.showAlertDialog(context, "Alert", "$error");
         //todo show error
       });
     } catch (error) {
-      Constants.showAlertDialog(context, "Alert", "$error");
+      Get.back();
+      //Constants.showAlertDialog(context, "Alert", "$error");
+      CustomDialogBox.buildOkDialog(
+        description: "$error",
+      );
     }
   }
 
   Future registerNewStaff(BuildContext context, String email, String password,
       String name, String phone) async {
     try {
+      CustomDialogBox.buildDialogBox();
       await auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
@@ -63,7 +76,7 @@ class FirebaseServices {
             options: HttpsCallableOptions(timeout: const Duration(seconds: 5)));
         var result = await callable({"email": value.user?.email});
         print("------------>staff claim ${result.data.toString()}");
-        Response response = await HttpServices().sendWelcomeMailToStaff(
+        http.Response response = await HttpServices().sendWelcomeMailToStaff(
             "Blood Transfusion Service", name, email, password, email);
         print("----------->email send${response.statusCode}");
 
@@ -75,16 +88,18 @@ class FirebaseServices {
           "enabled": true
         }).then((value) => print("Data stored in firestore"));
       });
-
+      Get.back();
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (ctx) => AdminDashboardScreen()));
-        Constants.showAlertDialog(
-            context, "Alert", "New Staff Member is Created");
+
+        CustomDialogBox.buildOkDialog(
+            description: "New Staff Member is Created");
       }
     } catch (error) {
-      Constants.showAlertDialog(context, "Alert", error.toString());
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: error.toString());
     }
   }
 
@@ -105,6 +120,7 @@ class FirebaseServices {
 
   Future changeAvailabilityOfStaff(
       String docId, String email, BuildContext context, bool toEnable) async {
+    CustomDialogBox.buildDialogBox();
     if (toEnable) {
       HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
           "enableStaffRole",
@@ -114,10 +130,14 @@ class FirebaseServices {
         firestore
             .collection("staff")
             .doc(docId)
-            .set({"enabled": false}, SetOptions(merge: true))
-            .then((value) => print('updated enable staff claim in firestore'))
-            .catchError((error) =>
-                Constants.showAlertDialog(context, "Alert", "$error"));
+            .set({"enabled": false}, SetOptions(merge: true)).then((value) {
+          Get.back();
+          CustomDialogBox.buildOkDialog(
+              description: "Staff Member has Disabled");
+        }).catchError((error) {
+          Get.back();
+          CustomDialogBox.buildOkDialog(description: "$error");
+        });
       });
     } else {
       HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
@@ -128,10 +148,14 @@ class FirebaseServices {
         firestore
             .collection("staff")
             .doc(docId)
-            .set({"enabled": true}, SetOptions(merge: true))
-            .then((value) => print('updated enable staff claim in firestore'))
-            .catchError((error) =>
-                Constants.showAlertDialog(context, "Alert", "$error"));
+            .set({"enabled": true}, SetOptions(merge: true)).then((value) {
+          Get.back();
+          CustomDialogBox.buildOkDialog(
+              description: "Staff Member has Enabled");
+        }).catchError((error) {
+          Get.back();
+          CustomDialogBox.buildOkDialog(description: "$error");
+        });
       });
     }
   }
@@ -139,28 +163,37 @@ class FirebaseServices {
   Future changeAdminPassword(String password, BuildContext context) async {
     print(password);
     try {
+      CustomDialogBox.buildDialogBox();
       await auth.currentUser?.updatePassword(password).then((value) {
-        Constants.showAlertDialog(
-            context, "Alert", "Password has been changed");
+        Get.back();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => AdminDashboardScreen()));
+        CustomDialogBox.buildOkDialog(description: "Password has been changed");
       }).catchError((error) {
-        Constants.showAlertDialog(context, "Alert", "$error");
+        Get.back();
+        CustomDialogBox.buildOkDialog(description: "$error");
       });
     } catch (error) {
-      Constants.showAlertDialog(context, "Alert", "$error");
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: "$error");
     }
   }
 
   Future changeStaffPassword(String password, BuildContext context) async {
-    print(password);
     try {
+      CustomDialogBox.buildDialogBox();
       await auth.currentUser?.updatePassword(password).then((value) {
-        Constants.showAlertDialog(
-            context, "Alert", "Password has been changed");
+        Get.back();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => AdminDashboardScreen()));
+        CustomDialogBox.buildOkDialog(description: "Password has been changed");
       }).catchError((error) {
-        Constants.showAlertDialog(context, "Alert", "$error");
+        Get.back();
+        CustomDialogBox.buildOkDialog(description: error.toString());
       });
     } catch (error) {
-      Constants.showAlertDialog(context, "Alert", "$error");
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: error.toString());
     }
   }
 
@@ -177,6 +210,7 @@ class FirebaseServices {
   //<---------------------------------STAFF API CALLS-------------------------------------------->
 
   Future staffLogin(String email, String password, BuildContext context) async {
+    CustomDialogBox.buildDialogBox();
     try {
       await auth
           .signInWithEmailAndPassword(
@@ -185,6 +219,7 @@ class FirebaseServices {
       )
           .then((auth) {
         auth.user?.getIdTokenResult().then((idTokenResult) {
+          Get.back();
           print(idTokenResult.claims?['staff']);
           if (idTokenResult.claims?['staff']) {
             Navigator.pushReplacement(
@@ -194,11 +229,13 @@ class FirebaseServices {
           }
         });
       }).catchError((error) {
-        Constants.showAlertDialog(context, "Alert", "$error");
+        Get.back();
+        CustomDialogBox.buildOkDialog(description: "$error");
         //todo show error
       });
     } catch (error) {
-      Constants.showAlertDialog(context, "Alert", "$error");
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: "$error");
     }
   }
 
@@ -219,6 +256,7 @@ class FirebaseServices {
       String endTime,
       String createdBy) async {
     try {
+      CustomDialogBox.buildDialogBox();
       firestore.collection("campaigns").doc(campaignId).set({
         "campaignId": campaignId,
         "location": location,
@@ -283,12 +321,13 @@ class FirebaseServices {
             .collection("group")
             .doc("o")
             .set({"o+": 0, "o-": 0});
-
-        Constants.showAlertDialog(
-            context, "Alert", "New campaign has been created");
+        Get.back();
+        CustomDialogBox.buildOkDialog(
+            description: "New campaign has been created");
       });
     } catch (error) {
-      Constants.showAlertDialog(context, "Alert", error.toString());
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: error.toString());
     }
   }
 
@@ -336,6 +375,7 @@ class FirebaseServices {
       required String assesAns,
       required bool isEdited}) async {
     try {
+      CustomDialogBox.buildDialogBox();
       if (!isEdited) {
         firestore.collection("assessments").doc().set({
           "answer": assesAns,
@@ -345,9 +385,10 @@ class FirebaseServices {
             "as_ta": assesInTa
           },
         }).then((value) {
-          Navigator.of(context).pop();
-          Constants.showAlertDialog(
-              context, "Alert", "Assessment has been added");
+          Get.back();
+          Get.back();
+          CustomDialogBox.buildOkDialog(
+              description: "Assessment has been added");
         });
       } else {
         firestore.collection("assessments").doc(assesId).set({
@@ -358,25 +399,29 @@ class FirebaseServices {
             "as_ta": assesInTa
           },
         }, SetOptions(merge: true)).then((value) {
-          Navigator.of(context).pop();
-          Constants.showAlertDialog(
-              context, "Alert", "Assessment has been added");
+          Get.back();
+          Get.back();
+          CustomDialogBox.buildOkDialog(
+              description: "Assessment has been added");
         });
       }
     } catch (error) {
-      Navigator.of(context).pop();
-      Constants.showAlertDialog(context, "Alert", error.toString());
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: error.toString());
     }
   }
 
   Future<void> deleteAssessment(BuildContext context, String assesId) async {
     try {
+      CustomDialogBox.buildDialogBox();
       firestore.collection("assessments").doc(assesId).delete().then((value) {
-        Constants.showAlertDialog(
-            context, "Alert", "Assessment has been Deleted");
+        Get.back();
+        CustomDialogBox.buildOkDialog(
+            description: "Assessment has been Deleted");
       });
     } catch (e) {
-      Constants.showAlertDialog(context, "Alert", e.toString());
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: e.toString());
     }
   }
 
@@ -412,6 +457,7 @@ class FirebaseServices {
 
   Future<void> setMedicalReport(BuildContext context, String campaignId,
       String donorId, Map<String, dynamic> data) async {
+    CustomDialogBox.buildDialogBox();
     try {
       firestore
           .collection("campaigns")
@@ -466,13 +512,15 @@ class FirebaseServices {
                 .collection("donorRequests")
                 .doc(donorId)
                 .set({"request": "no"}, SetOptions(merge: true));
-            Navigator.of(context).pop();
-            Constants.showAlertDialog(context, "Alert", "Assessment Completed");
+            Get.back();
+            Get.back();
+            CustomDialogBox.buildOkDialog(description: "Assessment Completed");
           });
         });
       });
     } catch (e) {
-      Constants.showAlertDialog(context, "Alert", e.toString());
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: "$e");
     }
   }
 

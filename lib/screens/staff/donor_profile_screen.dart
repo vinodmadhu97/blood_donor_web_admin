@@ -1,3 +1,4 @@
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
@@ -36,7 +37,7 @@ class _DonorProfileScreenState extends State<DonorProfileScreen> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return TableShimmer();
                       }
                       return Column(
                         children: [
@@ -241,7 +242,7 @@ class _DonorProfileScreenState extends State<DonorProfileScreen> {
                     return Text(snapshot.error.toString());
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
+                    return Text("");
                   }
                   return Card(
                     elevation: 10,

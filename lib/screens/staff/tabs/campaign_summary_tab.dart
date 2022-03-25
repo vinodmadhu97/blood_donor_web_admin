@@ -1,3 +1,4 @@
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:blood_donor_web_admin/widgets/blood_count_info_card.dart';
 import 'package:blood_donor_web_admin/widgets/chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,7 +33,7 @@ class CampaignSummaryTab extends StatelessWidget {
                     return Text(snapshot.error.toString());
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
+                    return Text("");
                   }
 
                   return Row(
@@ -86,7 +87,7 @@ class CampaignSummaryTab extends StatelessWidget {
                     return Text(snapshot.error.toString());
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
+                    return TableShimmer();
                   }
 
                   var aPersentage = 0;

@@ -1,6 +1,8 @@
 import 'package:blood_donor_web_admin/screens/staff/staff_login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 
 import 'constants/constants.dart';
 
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
           primarySwatch: Constants.appColorbrownRedSwatch,
@@ -33,8 +35,10 @@ class MyApp extends StatelessWidget {
         future: _firebaseInitialize,
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox(
-              child: CircularProgressIndicator(),
+            return const SizedBox(
+              child: SpinKitCircle(
+                color: Constants.appColorBrownRed,
+              ),
               width: 60,
               height: 60,
             );

@@ -365,7 +365,7 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
     final anchor = html.document.createElement('a') as html.AnchorElement
       ..href = url
       ..style.display = 'none'
-      ..download = 'qr_code.png';
+      ..download = '${_locationController.text}_${campaignId}.png';
     html.document.body?.children.add(anchor);
 
     anchor.click();

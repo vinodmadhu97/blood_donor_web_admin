@@ -1,3 +1,4 @@
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class _BloodDonorScreenState extends State<BloodDonorScreen> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return TableShimmer();
                       }
 
                       return Card(
@@ -136,7 +137,7 @@ class _BloodDonorScreenState extends State<BloodDonorScreen> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return TableShimmer();
                       }
 
                       return Card(

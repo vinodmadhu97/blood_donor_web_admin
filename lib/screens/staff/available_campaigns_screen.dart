@@ -1,3 +1,4 @@
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:blood_donor_web_admin/screens/staff/single_campaign_management_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
@@ -74,7 +75,7 @@ class _AvailableCampaignState extends State<AvailableCampaign> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return TableShimmer();
                       }
 
                       return Card(
@@ -137,7 +138,7 @@ class _AvailableCampaignState extends State<AvailableCampaign> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return TableShimmer();
                       }
 
                       return Card(

@@ -1,3 +1,4 @@
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:blood_donor_web_admin/widgets/proifle_history_data_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _CompletedDonorProfilePageState extends State<CompletedDonorProfilePage> {
                   return Text(snapshot.error.toString());
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text("Loading");
+                  return TableShimmer();
                 }
 
                 return ListView(

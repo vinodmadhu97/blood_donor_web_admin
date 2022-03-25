@@ -1,3 +1,4 @@
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,7 @@ class _CompletedDonorsTabState extends State<CompletedDonorsTab> {
                       return Text(snapshot.error.toString());
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
+                      return TableShimmer();
                     }
                     var newSnapshot = snapshot.data!.docs.where(
                         (QueryDocumentSnapshot element) =>
@@ -144,7 +145,7 @@ class _CompletedDonorsTabState extends State<CompletedDonorsTab> {
                       return Text(snapshot.error.toString());
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
+                      return TableShimmer();
                     }
                     var newSnapshot = snapshot.data!.docs.where(
                         (QueryDocumentSnapshot element) =>

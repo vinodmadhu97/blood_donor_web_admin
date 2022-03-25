@@ -1,4 +1,5 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
+import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:blood_donor_web_admin/services/firebase_services.dart';
 import 'package:blood_donor_web_admin/widgets/q&a_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -94,7 +95,7 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return TableShimmer();
                       }
 
                       return Column(
@@ -299,7 +300,7 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                         return Text(snapshot.error.toString());
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
+                        return Text("");
                       }
                       return Container(
                           width: double.infinity,

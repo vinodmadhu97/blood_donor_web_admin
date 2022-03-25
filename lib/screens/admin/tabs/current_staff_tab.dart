@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../constants/constants.dart';
 import '../../../services/firebase_services.dart';
+import '../../shimmers/table_shimmer.dart';
 
 class CurrentStaffTab extends StatefulWidget {
   CurrentStaffTab({Key? key}) : super(key: key);
@@ -73,7 +74,7 @@ class _CurrentStaffTabState extends State<CurrentStaffTab> {
                       return Text(snapshot.error.toString());
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
+                      return TableShimmer();
                     }
 
                     return Card(
@@ -142,7 +143,7 @@ class _CurrentStaffTabState extends State<CurrentStaffTab> {
                       return Text(snapshot.error.toString());
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
+                      return TableShimmer();
                     }
 
                     return Card(

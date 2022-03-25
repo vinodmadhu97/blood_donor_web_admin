@@ -53,20 +53,20 @@ class AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
           ),
           centerTitle: true,
-          bottom: TabBar(
+          bottom: const TabBar(
             labelColor: Constants.appColorWhite,
             //indicatorColor: Constants.appColorGray,
             tabs: [
               Tab(
-                text: "Current Staff",
+                text: "Registered Staff",
                 icon: Icon(Icons.call_received),
               ),
               Tab(
-                text: "Create Staff",
+                text: "Create New Staff",
                 icon: Icon(Icons.done),
               ),
               Tab(
-                text: "About",
+                text: "Account",
                 icon: Icon(Icons.web_outlined),
               )
             ],
