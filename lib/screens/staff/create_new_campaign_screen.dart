@@ -330,27 +330,6 @@ class _CreateNewCampaignState extends State<CreateNewCampaign> {
     );
   }
 
-  /*Widget _buildButton() {
-    return ElevatedButton(
-        onPressed: () async {
-          await _capturePng();
-          FirebaseServices().createNewCampaign(
-              context,
-              campaignId,
-              _locationController.text,
-              _dateController.text,
-              startTime.toString(),
-              endTime.toString(),
-              auth.currentUser!.uid);
-        },
-        style: ElevatedButton.styleFrom(
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30.0),
-          ),
-        ),
-        child: Text('Download'));
-  }*/
-
   Future<void> _capturePng() async {
     final picData = await _painter?.toImageData((size * 100).toDouble(),
         format: ImageByteFormat.png);
