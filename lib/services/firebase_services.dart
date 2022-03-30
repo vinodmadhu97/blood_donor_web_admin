@@ -1,7 +1,9 @@
 import 'package:blood_donor_web_admin/constants/custom_dialog_box.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as fbs;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -648,5 +650,121 @@ class FirebaseServices {
             .get();
 
     return donorSnapshot;
+  }
+
+  Future<void> sendPoster(PlatformFile file, String expDate) async {
+    String filename = DateTime.now().microsecondsSinceEpoch.toString();
+
+    try {
+      CustomDialogBox.buildDialogBox();
+
+      fbs.TaskSnapshot upload = await fbs.FirebaseStorage.instance
+          .ref()
+          .child("$filename.${file.extension}")
+          .putData(file.bytes!,
+              fbs.SettableMetadata(contentType: 'image/${file.extension}'));
+
+      String url = await upload.ref.getDownloadURL();
+      int publishedAt = DateTime.now().millisecondsSinceEpoch;
+
+      await firestore.collection("posters").doc().set({
+        "url": url,
+        "expireDate": expDate,
+        "publishedAt": publishedAt
+      }).then((value) {
+        Get.back();
+        CustomDialogBox.buildOkDialog(description: "Poster has been Sent");
+      });
+    } catch (e) {
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: "$e");
+    }
+  }
+
+  Future<void> sendCampaignPromotion(
+      {required PlatformFile file,
+      required String location,
+      required String address,
+      required String startDate,
+      required int startTime,
+      required int endTime}) async {
+    String filename = DateTime.now().microsecondsSinceEpoch.toString();
+
+    try {
+      CustomDialogBox.buildDialogBox();
+
+      fbs.TaskSnapshot upload = await fbs.FirebaseStorage.instance
+          .ref()
+          .child("$filename.${file.extension}")
+          .putData(file.bytes!,
+              fbs.SettableMetadata(contentType: 'image/${file.extension}'));
+
+      String url = await upload.ref.getDownloadURL();
+      int publishedAt = DateTime.now().millisecondsSinceEpoch;
+
+      await firestore.collection("campaignPromo").doc().set({
+        "url": url,
+        "location": location,
+        "startDate": startDate,
+        "startTime": startTime,
+        "endTime": endTime,
+        "address": address,
+        "publishedAt": publishedAt
+      }).then((value) {
+        Get.back();
+        CustomDialogBox.buildOkDialog(description: "Poster has been Sent");
+      });
+    } catch (e) {
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: "$e");
+    }
+  }
+
+  Stream<QuerySnapshot> getAllPosters() {
+    final Stream<QuerySnapshot> posterStream =
+        FirebaseFirestore.instance.collection('posters').snapshots();
+    return posterStream;
+  }
+
+  Stream<QuerySnapshot> getAllCampaignPromo() {
+    final Stream<QuerySnapshot> posterStream =
+        FirebaseFirestore.instance.collection('campaignPromo').snapshots();
+    return posterStream;
+  }
+
+  Future<void> sendDonationRequest(
+      {required String bloodGroup,
+      required String location,
+      required String address,
+      required String startDate,
+      required int startTime,
+      required int endTime}) async {
+    try {
+      CustomDialogBox.buildDialogBox();
+
+      int publishedAt = DateTime.now().millisecondsSinceEpoch;
+
+      await firestore.collection("donationRequests").doc().set({
+        "bloodGroup": bloodGroup,
+        "location": location,
+        "startDate": startDate,
+        "startTime": startTime,
+        "endTime": endTime,
+        "address": address,
+        "publishedAt": publishedAt
+      }).then((value) {
+        Get.back();
+        CustomDialogBox.buildOkDialog(description: "Request has been Sent");
+      });
+    } catch (e) {
+      Get.back();
+      CustomDialogBox.buildOkDialog(description: "$e");
+    }
+  }
+
+  Stream<QuerySnapshot> getAllRequests() {
+    final Stream<QuerySnapshot> requestStream =
+        FirebaseFirestore.instance.collection('donationRequests').snapshots();
+    return requestStream;
   }
 }

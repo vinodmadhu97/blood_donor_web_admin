@@ -43,7 +43,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
           centerTitle: true,
           bottom: TabBar(
-
             labelColor: Constants.appColorWhite,
             //indicatorColor: Constants.appColorGray,
             tabs: [

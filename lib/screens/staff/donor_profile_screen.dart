@@ -39,6 +39,7 @@ class _DonorProfileScreenState extends State<DonorProfileScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return TableShimmer();
                       }
+
                       return Column(
                         children: [
                           Container(
@@ -58,25 +59,21 @@ class _DonorProfileScreenState extends State<DonorProfileScreen> {
                                   SizedBox(
                                     height: 10.0,
                                   ),
-                                  CircleAvatar(
-                                    radius: 65.0,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(65),
+                                  SizedBox(
+                                    height: 130,
+                                    width: 130,
+                                    child: ClipOval(
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
-                                        imageUrl: snapshot.data["profileUrl"],
+                                        imageUrl:
+                                            "${snapshot.data["profileUrl"]}",
                                         placeholder: (context, url) =>
                                             new CircularProgressIndicator(),
                                         errorWidget: (context, url, error) =>
-                                            ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(65),
-                                          child: Image.asset(
-                                              "assets/images/profile_avatar.jpg"),
-                                        ),
+                                            Image.asset(
+                                                "assets/images/profile_avatar.jpg"),
                                       ),
                                     ),
-                                    backgroundColor: Colors.white,
                                   ),
                                   SizedBox(
                                     width: 10.0,

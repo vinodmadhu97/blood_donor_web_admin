@@ -5,20 +5,22 @@ import '../constants/constants.dart';
 import '../constants/widget_size.dart';
 import 'app_label.dart';
 
-class CampaignCardView extends StatelessWidget {
+class RequestCardView extends StatelessWidget {
   final String group;
-  final String imgUrl;
-  final String title;
   final String location;
-  final String time;
+  final String address;
+  final String date;
+  final String startTime;
+  final String endTime;
 
-  CampaignCardView(
+  RequestCardView(
       {Key? key,
       required this.group,
-      required this.title,
-      required this.imgUrl,
       required this.location,
-      required this.time})
+      required this.address,
+      required this.date,
+      required this.startTime,
+      required this.endTime})
       : super(key: key);
 
   @override
@@ -50,7 +52,7 @@ class CampaignCardView extends StatelessWidget {
                       color: Constants.appColorBrownRed,
                       child: Text(
                         group,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 28,
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
@@ -67,19 +69,20 @@ class CampaignCardView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           AppLabel(
-                            text: title,
+                            text: location,
                             widgetSize: WidgetSize.large,
                             textColor: Constants.appColorBrownRed,
                             fontWeight: FontWeight.w500,
                           ),
                           AppLabel(
-                            text: location,
+                            text: address,
                             widgetSize: WidgetSize.medium,
                             textColor: Colors.grey,
                             fontWeight: FontWeight.w500,
                           ),
                           AppLabel(
-                            text: time,
+                            text:
+                                "$date \nat $startTime.00 am - $endTime.00 pm",
                             widgetSize: WidgetSize.medium,
                             textColor: Constants.appColorBlack,
                             fontWeight: FontWeight.w600,

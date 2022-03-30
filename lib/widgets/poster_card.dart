@@ -1,10 +1,16 @@
+import 'package:blood_donor_web_admin/constants/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 
 import '../constants/custom_dialog_box.dart';
 
 class PosterCard extends StatelessWidget {
-  const PosterCard({Key? key}) : super(key: key);
+  final String docId;
+  final String url;
+  const PosterCard({Key? key, required this.docId, required this.url})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +28,15 @@ class PosterCard extends StatelessWidget {
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Image.asset(
-            "assets/images/poster-2.jpg",
-            fit: BoxFit.fill,
+          child: CachedNetworkImage(
+            fit: BoxFit.cover,
+            imageUrl: url,
+            placeholder: (context, url) => const SpinKitCircle(
+              color: Constants.appColorBrownRed,
+              size: 50,
+            ),
+            errorWidget: (context, url, error) =>
+                Image.asset("assets/images/profile_avatar.jpg"),
           ),
         ),
       ),
