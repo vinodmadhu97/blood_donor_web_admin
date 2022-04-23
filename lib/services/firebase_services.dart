@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as fbs;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -40,9 +41,12 @@ class FirebaseServices {
       )
           .then((auth) {
         Get.back();
-        auth.user?.getIdTokenResult().then((idTokenResult) {
+        auth.user?.getIdTokenResult().then((idTokenResult) async {
           print(idTokenResult.claims?['admin']);
           if (idTokenResult.claims?['admin']) {
+            var loggedUser = GetStorage('loggedUser');
+            await loggedUser.write("token", auth.user!.uid);
+            await loggedUser.write("userType", "admin");
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
@@ -220,10 +224,13 @@ class FirebaseServices {
         password: password,
       )
           .then((auth) {
-        auth.user?.getIdTokenResult().then((idTokenResult) {
+        auth.user?.getIdTokenResult().then((idTokenResult) async {
           Get.back();
           print(idTokenResult.claims?['staff']);
           if (idTokenResult.claims?['staff']) {
+            var loggedUser = GetStorage('loggedUser');
+            await loggedUser.write("token", auth.user!.uid);
+            await loggedUser.write("userType", "staff");
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => StaffDashboardScreen()),
@@ -659,7 +666,7 @@ class FirebaseServices {
       CustomDialogBox.buildDialogBox();
 
       fbs.TaskSnapshot upload = await fbs.FirebaseStorage.instance
-          .ref()
+          .ref("posters")
           .child("$filename.${file.extension}")
           .putData(file.bytes!,
               fbs.SettableMetadata(contentType: 'image/${file.extension}'));
@@ -669,6 +676,7 @@ class FirebaseServices {
 
       await firestore.collection("posters").doc().set({
         "url": url,
+        "fileName": "$filename.${file.extension}",
         "expireDate": expDate,
         "publishedAt": publishedAt
       }).then((value) {
@@ -694,7 +702,7 @@ class FirebaseServices {
       CustomDialogBox.buildDialogBox();
 
       fbs.TaskSnapshot upload = await fbs.FirebaseStorage.instance
-          .ref()
+          .ref("campaigns")
           .child("$filename.${file.extension}")
           .putData(file.bytes!,
               fbs.SettableMetadata(contentType: 'image/${file.extension}'));
@@ -721,14 +729,18 @@ class FirebaseServices {
   }
 
   Stream<QuerySnapshot> getAllPosters() {
-    final Stream<QuerySnapshot> posterStream =
-        FirebaseFirestore.instance.collection('posters').snapshots();
+    final Stream<QuerySnapshot> posterStream = FirebaseFirestore.instance
+        .collection('posters')
+        .orderBy('publishedAt', descending: true)
+        .snapshots();
     return posterStream;
   }
 
   Stream<QuerySnapshot> getAllCampaignPromo() {
-    final Stream<QuerySnapshot> posterStream =
-        FirebaseFirestore.instance.collection('campaignPromo').snapshots();
+    final Stream<QuerySnapshot> posterStream = FirebaseFirestore.instance
+        .collection('campaignPromo')
+        .orderBy('publishedAt', descending: true)
+        .snapshots();
     return posterStream;
   }
 
@@ -763,8 +775,31 @@ class FirebaseServices {
   }
 
   Stream<QuerySnapshot> getAllRequests() {
-    final Stream<QuerySnapshot> requestStream =
-        FirebaseFirestore.instance.collection('donationRequests').snapshots();
+    final Stream<QuerySnapshot> requestStream = FirebaseFirestore.instance
+        .collection('donationRequests')
+        .orderBy('publishedAt', descending: true)
+        .snapshots();
     return requestStream;
+  }
+
+  void deletePoster(String id, String url) {
+    CustomDialogBox.buildDialogBox();
+    firestore.collection("posters").doc(id).delete().then((value) {
+      Get.back();
+    });
+  }
+
+  void deleteCampaignPromo(String id, String url) {
+    CustomDialogBox.buildDialogBox();
+    firestore.collection("campaignPromo").doc(id).delete().then((value) {
+      Get.back();
+    });
+  }
+
+  void deleteDonationRequest(String id) {
+    CustomDialogBox.buildDialogBox();
+    firestore.collection("donationRequests").doc(id).delete().then((value) {
+      Get.back();
+    });
   }
 }

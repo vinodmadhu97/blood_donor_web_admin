@@ -1,13 +1,19 @@
+import 'package:blood_donor_web_admin/screens/admin/admin_dashboard_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/staff_dashboard_screen.dart';
+import 'package:blood_donor_web_admin/screens/staff/staff_login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'constants/constants.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GetStorage loggedUser = GetStorage('loggedUser');
+  await GetStorage.init('loggedUser');
   runApp(MyApp());
 }
 
@@ -43,10 +49,30 @@ class MyApp extends StatelessWidget {
               height: 60,
             );
           } else {
-            return StaffDashboardScreen();
+            var loggedUser = GetStorage('loggedUser');
+            print("------------------>${loggedUser.read("token")}");
+            print("------------------>${loggedUser.read("userType")}");
+            if (loggedUser.read("token") == null) {
+              return StaffLoginScreen();
+            } else {
+              if (loggedUser.read("userType") == "staff") {
+                return StaffDashboardScreen();
+              } else if (loggedUser.read("userType") == "admin") {
+                return AdminDashboardScreen();
+              } else {
+                return StaffLoginScreen();
+              }
+            }
           }
         },
       ),
     );
+  }
+
+  Future<IdTokenResult?> checkUser() async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return null;
+    }
+    return FirebaseAuth.instance.currentUser!.getIdTokenResult();
   }
 }

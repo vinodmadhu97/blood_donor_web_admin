@@ -93,7 +93,7 @@ class _BloodDonorScreenState extends State<BloodDonorScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Campaigns",
+                                "Blood Donors",
                                 style: Theme.of(context).textTheme.subtitle1,
                               ),
                               SizedBox(

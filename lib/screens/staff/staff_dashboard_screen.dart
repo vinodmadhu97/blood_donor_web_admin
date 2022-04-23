@@ -1,4 +1,5 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
+import 'package:blood_donor_web_admin/constants/custom_dialog_box.dart';
 import 'package:blood_donor_web_admin/screens/staff/assessments_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/blood_donor_screen.dart';
 import 'package:blood_donor_web_admin/screens/staff/create_new_campaign_screen.dart';
@@ -9,7 +10,9 @@ import 'package:blood_donor_web_admin/widgets/profile_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_storage/get_storage.dart';
 
+import '../../services/firebase_services.dart';
 import 'available_campaigns_screen.dart';
 
 class StaffDashboardScreen extends StatefulWidget {
@@ -39,6 +42,18 @@ class StaffDashboardScreenState extends State<StaffDashboardScreen>
     super.dispose();
   }
 
+  void logOut() {
+    print("logout");
+    var result = FirebaseServices().adminLogout(context);
+    var loggedUser = GetStorage('loggedUser');
+    loggedUser.remove("token");
+    loggedUser.remove("userType");
+    if (result) {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (ctx) => StaffLoginScreen()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,8 +74,8 @@ class StaffDashboardScreenState extends State<StaffDashboardScreen>
               padding: EdgeInsets.all(0),
               icon: Icon(Icons.exit_to_app),
               onPressed: () {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => StaffLoginScreen()));
+                CustomDialogBox.buildOkWithCancelDialog(
+                    description: "Do you want to Logout?", okOnclick: logOut);
               },
             ),
           ),

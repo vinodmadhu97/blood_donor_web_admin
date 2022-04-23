@@ -45,9 +45,7 @@ class CustomDialogBox {
         buttonColor: Constants.appColorBrownRed,
         barrierDismissible: true,
         radius: 10,
-        onConfirm: () {
-          Get.back();
-        });
+        onConfirm: () {});
   }
 
   static buildOkWithCancelDialog(
@@ -55,6 +53,7 @@ class CustomDialogBox {
       required String description,
       String confirmText = "Ok",
       String cancelText = "Cancel",
+      Widget? content,
       required Function okOnclick}) {
     Get.defaultDialog(
         contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
@@ -70,6 +69,7 @@ class CustomDialogBox {
         buttonColor: Constants.appColorBrownRed,
         barrierDismissible: false,
         radius: 10,
+        content: content,
         onConfirm: () {
           okOnclick();
         });

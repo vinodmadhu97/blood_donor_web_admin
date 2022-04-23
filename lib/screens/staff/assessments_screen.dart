@@ -130,12 +130,12 @@ class AssessmentScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: Constants.defaultPadding),
-                child: Text(snapshot.id),
+                child: Text(snapshot['assessment']['as_en']),
               ),
             ],
           ),
         ),
-        DataCell(Text(snapshot['assessment']['as_en'])),
+        DataCell(Text(snapshot['answer'])),
         DataCell(Row(
           children: [
             ElevatedButton(

@@ -1,4 +1,3 @@
-import 'package:blood_donor_web_admin/constants/custom_dialog_box.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/constants.dart';
@@ -25,76 +24,66 @@ class RequestCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        CustomDialogBox.buildOkWithCancelDialog(
-            description: "Do you want to Delete?",
-            okOnclick: () {
-              print("Delete");
-            });
-      },
-      child: Card(
-          elevation: 5,
-          //shadowColor: Colors.red,
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Container(
-            width: double.infinity,
-            height: 150,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                      alignment: Alignment.center,
-                      height: double.infinity,
-                      color: Constants.appColorBrownRed,
-                      child: Text(
-                        group,
-                        style: const TextStyle(
-                            fontSize: 28,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      )),
-                ),
-                Expanded(
-                  flex: 5,
-                  child: Container(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 6.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          AppLabel(
-                            text: location,
-                            widgetSize: WidgetSize.large,
-                            textColor: Constants.appColorBrownRed,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          AppLabel(
-                            text: address,
-                            widgetSize: WidgetSize.medium,
-                            textColor: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          AppLabel(
-                            text:
-                                "$date \nat $startTime.00 am - $endTime.00 pm",
-                            widgetSize: WidgetSize.medium,
-                            textColor: Constants.appColorBlack,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ],
-                      ),
+    return Card(
+        elevation: 5,
+        //shadowColor: Colors.red,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: Container(
+          width: double.infinity,
+          height: 150,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Container(
+                    alignment: Alignment.center,
+                    height: double.infinity,
+                    color: Constants.appColorBrownRed,
+                    child: Text(
+                      group,
+                      style: const TextStyle(
+                          fontSize: 28,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    )),
+              ),
+              Expanded(
+                flex: 5,
+                child: Container(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 6.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        AppLabel(
+                          text: location,
+                          widgetSize: WidgetSize.large,
+                          textColor: Constants.appColorBrownRed,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        AppLabel(
+                          text: address,
+                          widgetSize: WidgetSize.medium,
+                          textColor: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        AppLabel(
+                          text: "$date \nat $startTime.00 am - $endTime.00 pm",
+                          widgetSize: WidgetSize.medium,
+                          textColor: Constants.appColorBlack,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ],
                     ),
                   ),
-                )
-              ],
-            ),
-          )),
-    );
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

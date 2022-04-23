@@ -40,15 +40,15 @@ class StaffAccountScreen extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 30,
+                    height: 70,
                   ),
                   Text(
-                    "Change Admin Password",
+                    "CHANGE PASSWORD",
                     style: TextStyle(
                         color: Constants.appColorBrownRed, fontSize: 20),
                   ),
                   SizedBox(
-                    height: 70,
+                    height: 30,
                   ),
                   AppInputField(
                       formKey: passwordKey,
