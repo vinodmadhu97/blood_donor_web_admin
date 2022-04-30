@@ -58,8 +58,9 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
       },
     );
 
-    var loginButton = Container(
+    var loginButton = SizedBox(
       width: MediaQuery.of(context).size.width / 2.5,
+      height: 40,
       child: ElevatedButton(
         onPressed: () async {
           FirebaseServices().staffLogin(this.email, this.password, context);

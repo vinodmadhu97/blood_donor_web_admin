@@ -214,7 +214,7 @@ class _CompletedDonorsTabState extends State<CompletedDonorsTab> {
         DataCell(Text(snapshot["donorName"])),
         DataCell(Text(snapshot["nic"])),
         DataCell(ElevatedButton(
-          child: Text("Action"),
+          child: Text("View"),
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => CompletedDonorProfilePage(

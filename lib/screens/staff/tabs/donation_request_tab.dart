@@ -1,8 +1,10 @@
+import 'package:blood_donor_web_admin/constants/custom_dialog_box.dart';
 import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../../../constants/constants.dart';
 import '../../../services/firebase_services.dart';
@@ -65,8 +67,6 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
                                 "donorRequests",
                                 "nic",
                                 searchedValue);
-                        /*getSearchedResult(
-                            "campaigns", "location", searchedValue);*/
                       });
                     },
                   ),
@@ -145,7 +145,7 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
                       return Text(snapshot.error.toString());
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return TableShimmer();
+                      return Text("");
                     }
                     var newSnapshot = snapshot.data!.docs.where(
                         (QueryDocumentSnapshot element) =>
@@ -215,11 +215,29 @@ class _DonationRequestTabState extends State<DonationRequestTab> {
         DataCell(Text(snapshot["nic"])),
         DataCell(ElevatedButton(
           child: Text("Action"),
-          onPressed: () {
+          onPressed: () async {
+            CustomDialogBox.buildDialogBox();
+            var donorProfile = await FirebaseServices()
+                .getDonorDetailsById(snapshot["donorId"]);
+            var donorAssessmentData = await FirebaseServices()
+                .getDonorAssessmentData(snapshot["donorId"], widget.campaignId);
+
+            Get.back();
+            print(donorProfile.data()!['profileUrl']);
+            print(donorAssessmentData.data()!['profileUrl']);
+
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => DonorManagementScreen(
+                      profileData: donorProfile,
+                      assessmentData: donorAssessmentData,
+                      donorId: snapshot["donorId"],
+                      campaignId: widget.campaignId,
+                    )));
+
+            /*Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => DonorManagementScreen(
                     campaignId: widget.campaignId,
-                    donorId: snapshot["donorId"])));
+                    donorId: snapshot["donorId"])));*/
           },
         )),
       ],

@@ -1,4 +1,1235 @@
 import 'package:blood_donor_web_admin/constants/constants.dart';
+import 'package:blood_donor_web_admin/constants/widget_size.dart';
+import 'package:blood_donor_web_admin/widgets/app_heading.dart';
+import 'package:blood_donor_web_admin/widgets/app_label.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+import 'package:intl/intl.dart';
+
+import '../../services/firebase_services.dart';
+
+class DonorManagementScreen extends StatefulWidget {
+  final DocumentSnapshot profileData;
+  final DocumentSnapshot assessmentData;
+  final String campaignId;
+  final String donorId;
+
+  const DonorManagementScreen(
+      {Key? key,
+      required this.profileData,
+      required this.assessmentData,
+      required this.donorId,
+      required this.campaignId})
+      : super(key: key);
+
+  @override
+  _DonorManagementScreenState createState() => _DonorManagementScreenState(
+      profileData: profileData, assessmentData: assessmentData);
+}
+
+class _DonorManagementScreenState extends State<DonorManagementScreen> {
+  final DocumentSnapshot profileData;
+  final DocumentSnapshot assessmentData;
+
+  bool verified = false;
+  int counter = 0;
+  bool feelingWell = false;
+  bool isSleep = false;
+  bool lastMeal = false;
+  bool hospitalised = false;
+  bool allergies = false;
+  bool riskBehaviours = false;
+  bool deferral = false;
+
+  TextEditingController barcodeController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
+  TextEditingController bloodGroupController = TextEditingController();
+  TextEditingController cvsStatusController = TextEditingController();
+  TextEditingController bpController = TextEditingController();
+  TextEditingController deferralController = TextEditingController();
+  TextEditingController remarksController = TextEditingController();
+
+  _DonorManagementScreenState(
+      {required this.profileData, required this.assessmentData});
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> assessment =
+        assessmentData.data() as Map<String, dynamic>;
+    List<Widget> answers = assessment.entries
+        .map((value) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [Text(value.key), Text(value.value)],
+              ),
+            ))
+        .toList();
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Card(
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: ClipOval(
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: profileData['profileUrl'],
+                                    placeholder: (context, url) =>
+                                        new CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        ClipRRect(
+                                      borderRadius: BorderRadius.circular(65),
+                                      child: Image.asset(
+                                          "assets/images/profile_avatar.jpg"),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Column(
+                                children: [
+                                  AppHeading(
+                                    widgetSize: WidgetSize.medium,
+                                    text: profileData['fullName'],
+                                    color: Constants.appColorBrownRed,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  AppHeading(
+                                    widgetSize: WidgetSize.small,
+                                    text: profileData['address'],
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  AppHeading(
+                                    widgetSize: WidgetSize.small,
+                                    text: profileData['phone'],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 20),
+                          child: Row(
+                            children: [
+                              Spacer(
+                                flex: 1,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Group',
+                                    style: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 14.0),
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Text(
+                                    profileData['bloodGroup'].toString().isEmpty
+                                        ? "N/A"
+                                        : profileData['bloodGroup'],
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Spacer(
+                                flex: 1,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'DOB',
+                                    style: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 14.0),
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Text(
+                                    profileData['dob'],
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Spacer(
+                                flex: 1,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'NIC',
+                                    style: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 14.0),
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Text(
+                                    profileData['nic'],
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Spacer(
+                                flex: 1,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Donations',
+                                    style: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 14.0),
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Text(
+                                    profileData['numberOfDonation'],
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Spacer(
+                                flex: 1,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Last Donation',
+                                    style: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 14.0),
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Text(
+                                    profileData['nextDonationDate']
+                                            .toString()
+                                            .isEmpty
+                                        ? "N/A"
+                                        : profileData['nextDonationDate'],
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Spacer(
+                                flex: 1,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                          elevation: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(children: answers),
+                          ))
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Card(
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Row(
+                            children: [
+                              Spacer(
+                                flex: 1,
+                              ),
+                              const Icon(
+                                Icons.verified_user_rounded,
+                                color: Colors.green,
+                                size: 40,
+                              ),
+                              Spacer(
+                                flex: 1,
+                              ),
+                              AppLabel(
+                                  text: "Is verified Donor?",
+                                  widgetSize: WidgetSize.large),
+                              Spacer(
+                                flex: 1,
+                              ),
+                              Container(
+                                child: FlutterSwitch(
+                                  width: 60.0,
+                                  height: 30.0,
+                                  valueFontSize: 10.0,
+                                  toggleSize: 20.0,
+                                  value: verified,
+                                  activeText: "Yes",
+                                  activeColor: Colors.green,
+                                  inactiveColor: Colors.red,
+                                  inactiveText: "No",
+                                  borderRadius: 20.0,
+                                  padding: 8.0,
+                                  showOnOff: true,
+                                  onToggle: (val) {
+                                    setState(() {
+                                      verified = val;
+                                    });
+                                  },
+                                ),
+                              ),
+                              Spacer(
+                                flex: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: AppLabel(
+                                      text: "Barcode",
+                                      widgetSize: WidgetSize.large,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 30,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 300,
+                                      child: TextField(
+                                        controller: barcodeController,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            color: Constants.appColorBlack,
+                                            fontSize: 14),
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          hintStyle: TextStyle(
+                                              color: Constants.appColorGray,
+                                              fontSize: 14),
+                                          hintText: "Barcode number",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorBrownRed,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorGray,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(
+                                    flex: 4,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: AppLabel(
+                                      text: "Weight(Kg)",
+                                      widgetSize: WidgetSize.large,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 30,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 300,
+                                      child: TextField(
+                                        controller: weightController,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            color: Constants.appColorBlack,
+                                            fontSize: 14),
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          hintStyle: TextStyle(
+                                              color: Constants.appColorGray,
+                                              fontSize: 14),
+                                          hintText: "Kg",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorBrownRed,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorGray,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(
+                                    flex: 4,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: AppLabel(
+                                      text: "Blood Group",
+                                      widgetSize: WidgetSize.large,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 30,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 300,
+                                      child: TextField(
+                                        controller: bloodGroupController,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            color: Constants.appColorBlack,
+                                            fontSize: 14),
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          hintStyle: TextStyle(
+                                              color: Constants.appColorGray,
+                                              fontSize: 14),
+                                          hintText: "Blood Group",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorBrownRed,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorGray,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(
+                                    flex: 4,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: AppLabel(
+                                      text: "CVS Pulse",
+                                      widgetSize: WidgetSize.large,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 30,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 300,
+                                      child: TextField(
+                                        controller: cvsStatusController,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            color: Constants.appColorBlack,
+                                            fontSize: 14),
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          hintStyle: TextStyle(
+                                              color: Constants.appColorGray,
+                                              fontSize: 14),
+                                          hintText: "CVS Pulse Status",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorBrownRed,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorGray,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(
+                                    flex: 4,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: AppLabel(
+                                      text: "BP",
+                                      widgetSize: WidgetSize.large,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 30,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 300,
+                                      child: TextField(
+                                        controller: bpController,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            color: Constants.appColorBlack,
+                                            fontSize: 14),
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          hintStyle: TextStyle(
+                                              color: Constants.appColorGray,
+                                              fontSize: 14),
+                                          hintText: "BP Value",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorBrownRed,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                            borderSide: BorderSide(
+                                              color: Constants.appColorGray,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(
+                                    flex: 4,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        elevation: 0,
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Feeling well?"),
+                                        Container(
+                                          child: FlutterSwitch(
+                                            width: 60.0,
+                                            height: 30.0,
+                                            valueFontSize: 10.0,
+                                            toggleSize: 20.0,
+                                            value: feelingWell,
+                                            activeColor: Colors.green,
+                                            activeText: "Yes",
+                                            inactiveText: "No",
+                                            inactiveColor:
+                                                Constants.appColorBrownRed,
+                                            borderRadius: 20.0,
+                                            padding: 8.0,
+                                            showOnOff: true,
+                                            onToggle: (val) {
+                                              setState(() {
+                                                feelingWell = val;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Last meal (<4hrs)?"),
+                                        Container(
+                                          child: FlutterSwitch(
+                                            width: 60.0,
+                                            height: 30.0,
+                                            valueFontSize: 10.0,
+                                            toggleSize: 20.0,
+                                            value: lastMeal,
+                                            activeColor: Colors.green,
+                                            inactiveColor:
+                                                Constants.appColorBrownRed,
+                                            activeText: "Yes",
+                                            inactiveText: "No",
+                                            borderRadius: 20.0,
+                                            padding: 8.0,
+                                            showOnOff: true,
+                                            onToggle: (val) {
+                                              setState(() {
+                                                lastMeal = val;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            "No Any Allergies or medications?"),
+                                        Container(
+                                          child: FlutterSwitch(
+                                            width: 60.0,
+                                            height: 30.0,
+                                            valueFontSize: 10.0,
+                                            toggleSize: 20.0,
+                                            value: allergies,
+                                            activeColor: Colors.green,
+                                            inactiveColor:
+                                                Constants.appColorBrownRed,
+                                            activeText: "Yes",
+                                            inactiveText: "No",
+                                            borderRadius: 20.0,
+                                            padding: 8.0,
+                                            showOnOff: true,
+                                            onToggle: (val) {
+                                              setState(() {
+                                                allergies = val;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )),
+                            Expanded(
+                                child: Container(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Adequate overnight sleep?(>6hrs)"),
+                                      Container(
+                                        child: FlutterSwitch(
+                                          width: 60.0,
+                                          height: 30.0,
+                                          valueFontSize: 10.0,
+                                          toggleSize: 20.0,
+                                          value: isSleep,
+                                          activeColor: Colors.green,
+                                          inactiveColor:
+                                              Constants.appColorBrownRed,
+                                          activeText: "Yes",
+                                          inactiveText: "No",
+                                          borderRadius: 20.0,
+                                          padding: 8.0,
+                                          showOnOff: true,
+                                          onToggle: (val) {
+                                            setState(() {
+                                              isSleep = val;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Ever Hospitalised?"),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Container(
+                                        child: FlutterSwitch(
+                                          width: 60.0,
+                                          height: 30.0,
+                                          valueFontSize: 10.0,
+                                          toggleSize: 20.0,
+                                          value: hospitalised,
+                                          activeColor: Colors.green,
+                                          inactiveColor:
+                                              Constants.appColorBrownRed,
+                                          activeText: "Yes",
+                                          inactiveText: "No",
+                                          borderRadius: 20.0,
+                                          padding: 8.0,
+                                          showOnOff: true,
+                                          onToggle: (val) {
+                                            setState(() {
+                                              hospitalised = val;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("High risk behaviours?"),
+                                      Container(
+                                        child: FlutterSwitch(
+                                          width: 60.0,
+                                          height: 30.0,
+                                          valueFontSize: 10.0,
+                                          toggleSize: 20.0,
+                                          value: riskBehaviours,
+                                          activeColor: Colors.green,
+                                          inactiveColor:
+                                              Constants.appColorBrownRed,
+                                          activeText: "Yes",
+                                          inactiveText: "No",
+                                          borderRadius: 20.0,
+                                          padding: 8.0,
+                                          showOnOff: true,
+                                          onToggle: (val) {
+                                            setState(() {
+                                              riskBehaviours = val;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(),
+                ),
+                Expanded(
+                    flex: 4,
+                    child: Card(
+                      elevation: 0,
+                      color: Constants.appColorGray.withOpacity(0.5),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50.0, vertical: 30),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text("Deferral?"),
+                                SizedBox(
+                                  width: 30,
+                                ),
+                                Container(
+                                  child: FlutterSwitch(
+                                    width: 60.0,
+                                    height: 30.0,
+                                    valueFontSize: 10.0,
+                                    toggleSize: 20.0,
+                                    value: deferral,
+                                    activeColor: Constants.appColorBrownRed,
+                                    activeText: "Yes",
+                                    inactiveText: "No",
+                                    borderRadius: 20.0,
+                                    padding: 8.0,
+                                    showOnOff: true,
+                                    onToggle: (val) {
+                                      setState(() {
+                                        deferral = val;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              children: [
+                                Visibility(
+                                  visible: deferral,
+                                  child: Row(
+                                    children: [
+                                      Text("Reasons for deferral"),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      SizedBox(
+                                        height: 40,
+                                        width: 300,
+                                        child: TextField(
+                                          controller: deferralController,
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              color: Constants.appColorBlack,
+                                              fontSize: 14),
+                                          keyboardType: TextInputType.text,
+                                          decoration: InputDecoration(
+                                            hintStyle: TextStyle(
+                                                color: Constants.appColorGray,
+                                                fontSize: 14),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4.0),
+                                              borderSide: BorderSide(
+                                                color:
+                                                    Constants.appColorBrownRed,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4.0),
+                                              borderSide: BorderSide(
+                                                color: Constants.appColorGray,
+                                                width: 1.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              children: [
+                                Text("Remarks"),
+                                SizedBox(
+                                  width: 30,
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                  width: 300,
+                                  child: TextField(
+                                    controller: remarksController,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Constants.appColorBlack,
+                                        fontSize: 14),
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(
+                                          color: Constants.appColorGray,
+                                          fontSize: 14),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(4.0),
+                                        borderSide: BorderSide(
+                                          color: Constants.appColorBrownRed,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(4.0),
+                                        borderSide: BorderSide(
+                                          color: Constants.appColorGray,
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              children: [
+                                Visibility(
+                                  child: SizedBox(
+                                    height: 40,
+                                    child: ElevatedButton(
+                                        onPressed: () async {
+                                          if (!deferral) {
+                                            if (isVerifiedForAccept()) {
+                                              print(barcodeController.text);
+                                              print("verify $verified");
+                                              print(weightController.text);
+                                              print(bloodGroupController.text);
+                                              print("feeling $feelingWell");
+                                              print("last meel $lastMeal");
+                                              print("alagi $allergies");
+                                              print("sleep $isSleep");
+                                              print(
+                                                  "hospitalized $hospitalised");
+                                              print("risk $riskBehaviours");
+                                              print(cvsStatusController.text);
+                                              print(bpController.text);
+                                              print(deferral);
+                                              print(remarksController.text);
+
+                                              DateTime now = DateTime.now();
+                                              var formatterDate =
+                                                  DateFormat('yyyy-MM-dd');
+                                              String actualDate =
+                                                  formatterDate.format(now);
+
+                                              Map<String, dynamic> data = {
+                                                "isVerified":
+                                                    verified ? "yes" : "no",
+                                                "barcode":
+                                                    barcodeController.text,
+                                                "weight": weightController.text,
+                                                "bloodGroup":
+                                                    bloodGroupController.text,
+                                                "feelingWell":
+                                                    feelingWell ? "yes" : "no",
+                                                "lastMeal":
+                                                    lastMeal ? "yes" : "no",
+                                                "allergies":
+                                                    allergies ? "yes" : "no",
+                                                "isSlept":
+                                                    isSleep ? "yes" : "no",
+                                                "hospitalized":
+                                                    hospitalised ? "yes" : "no",
+                                                "isRisk": riskBehaviours
+                                                    ? "yes"
+                                                    : "no",
+                                                "cvs": cvsStatusController.text,
+                                                "bp": bpController.text,
+                                                "deferral":
+                                                    deferral ? "yes" : "no",
+                                                "remark":
+                                                    remarksController.text,
+                                                "remarkForDeferral": "",
+                                                "accept": "yes",
+                                                "date": actualDate
+                                              };
+
+                                              await FirebaseServices()
+                                                  .setMedicalReport(
+                                                      context,
+                                                      widget.campaignId,
+                                                      widget.donorId,
+                                                      data);
+                                            } else {
+                                              Constants.showAlertDialog(
+                                                  context,
+                                                  "Alert",
+                                                  "Please Fill out the All Fields");
+                                            }
+                                          }
+                                        },
+                                        child: Text("Accept")),
+                                  ),
+                                  visible: !deferral,
+                                ),
+                                SizedBox(
+                                  width: 30,
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                  child: ElevatedButton(
+                                      onPressed: () async {
+                                        if (deferral) {
+                                          if (isVerifiedForReject()) {
+                                            DateTime now = DateTime.now();
+                                            var formatterDate =
+                                                DateFormat('yyyy-MM-dd');
+                                            String actualDate =
+                                                formatterDate.format(now);
+
+                                            Map<String, dynamic> data = {
+                                              "isVerified":
+                                                  verified ? "yes" : "no",
+                                              "barcode": barcodeController.text,
+                                              "weight": weightController.text,
+                                              "bloodGroup":
+                                                  bloodGroupController.text,
+                                              "feelingWell":
+                                                  feelingWell ? "yes" : "no",
+                                              "lastMeal":
+                                                  lastMeal ? "yes" : "no",
+                                              "allergies":
+                                                  allergies ? "yes" : "no",
+                                              "isSlept": isSleep ? "yes" : "no",
+                                              "hospitalized":
+                                                  hospitalised ? "yes" : "no",
+                                              "isRisk":
+                                                  riskBehaviours ? "yes" : "no",
+                                              "cvs": cvsStatusController.text,
+                                              "bp": bpController.text,
+                                              "deferral":
+                                                  deferral ? "yes" : "no",
+                                              "remark": remarksController.text,
+                                              "remarkForDeferral":
+                                                  deferralController.text,
+                                              "accept": "no",
+                                              "date": actualDate
+                                            };
+
+                                            print(data);
+
+                                            await FirebaseServices()
+                                                .setMedicalReport(
+                                                    context,
+                                                    widget.campaignId,
+                                                    widget.donorId,
+                                                    data);
+                                          }
+                                        } else if (!deferral) {
+                                          DateTime now = DateTime.now();
+                                          var formatterDate =
+                                              DateFormat('yyyy-MM-dd');
+                                          String actualDate =
+                                              formatterDate.format(now);
+
+                                          Map<String, dynamic> data = {
+                                            "isVerified":
+                                                verified ? "yes" : "no",
+                                            "barcode": barcodeController.text,
+                                            "weight": weightController.text,
+                                            "bloodGroup":
+                                                bloodGroupController.text,
+                                            "feelingWell":
+                                                feelingWell ? "yes" : "no",
+                                            "lastMeal": lastMeal ? "yes" : "no",
+                                            "allergies":
+                                                allergies ? "yes" : "no",
+                                            "isSlept": isSleep ? "yes" : "no",
+                                            "hospitalized":
+                                                hospitalised ? "yes" : "no",
+                                            "isRisk":
+                                                riskBehaviours ? "yes" : "no",
+                                            "cvs": cvsStatusController.text,
+                                            "bp": bpController.text,
+                                            "deferral": deferral ? "yes" : "no",
+                                            "remark": remarksController.text,
+                                            "remarkForDeferral":
+                                                deferralController.text,
+                                            "accept": "no",
+                                            "date": actualDate
+                                          };
+
+                                          await FirebaseServices()
+                                              .setMedicalReport(
+                                                  context,
+                                                  widget.campaignId,
+                                                  widget.donorId,
+                                                  data);
+                                        }
+                                      },
+                                      child: Text("Reject"),
+                                      style: ElevatedButton.styleFrom(
+                                          primary: !deferral
+                                              ? Constants.appColorGray
+                                              : Constants.appColorBrownRed)),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                Expanded(
+                  flex: 2,
+                  child: Container(),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool isVerifiedForAccept() {
+    if (barcodeController.text.isEmpty) {
+      return false;
+    } else if (weightController.text.isEmpty) {
+      return false;
+    } else if (bloodGroupController.text.isEmpty) {
+      return false;
+    } else if (cvsStatusController.text.isEmpty) {
+      return false;
+    } else if (bpController.text.isEmpty) {
+      return false;
+    } else if (remarksController.text.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool isVerifiedForReject() {
+    if (barcodeController.text.isEmpty) {
+      return false;
+    } else if (weightController.text.isEmpty) {
+      return false;
+    } else if (bloodGroupController.text.isEmpty) {
+      return false;
+    } else if (cvsStatusController.text.isEmpty) {
+      return false;
+    } else if (bpController.text.isEmpty) {
+      return false;
+    } else if (deferralController.text.isEmpty) {
+      return false;
+    } else if (remarksController.text.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
+
+/*import 'package:blood_donor_web_admin/constants/constants.dart';
 import 'package:blood_donor_web_admin/screens/shimmers/table_shimmer.dart';
 import 'package:blood_donor_web_admin/services/firebase_services.dart';
 import 'package:blood_donor_web_admin/widgets/q&a_list.dart';
@@ -273,7 +1504,7 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
                                     SizedBox(
                                       height: 5.0,
                                     ),
-                                    Text(
+                                      Text(
                                       snapshot.data['nextDonationDate']
                                               .isNotEmpty
                                           ? snapshot.data['nextDonationDate']
@@ -1131,4 +2362,4 @@ class _DonorManagementScreenState extends State<DonorManagementScreen> {
       ),
     );
   }
-}
+}*/

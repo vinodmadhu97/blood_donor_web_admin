@@ -44,6 +44,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
     final loginButton = Container(
       width: MediaQuery.of(context).size.width / 2.5,
+      height: 40,
       child: ElevatedButton(
         onPressed: () async {
           FirebaseServices().adminLogin(this.email, this.password, context);
